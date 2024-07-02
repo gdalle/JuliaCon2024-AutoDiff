@@ -1,0 +1,198 @@
+[
+  {
+    "objectID": "ideas.html",
+    "href": "ideas.html",
+    "title": "JuliaCon talk on AD",
+    "section": "",
+    "text": "The state of automatic differentiation in Julia\nAutodiff in Julia from the user perspective\nA quick guide to autodiff in Julia\nA quick tour of AD in Julia\nNavigating the Julia AD ecosystem\nAD in Julia: A Beginner’s Guide to Backends and Beyond\nFrom Basics to Backends: A Complete Guide to Automatic Differentiation in Julia\n\n\n\n\n\nComplexity of the Julia ecosystem\n\nNumber of backends can be overwhelming / confusing (just open https://juliadiff.org/)\n\nDevs: Which backend do you use?\nUsers: Which function/method is differentiable with which backend?\n\nLots of folklore in Julia community\n\nA quick taxonomy of AD systems\n\nWe want gradients and more generally Jacobians\nAD systems only compute VJPs and JVPs\n\nFor function \\(f: \\mathbb{R}^n \\rightarrow \\mathbb{R}^m\\)\n\n\\(n\\) JVPs to compute Jacobian\n\\(m\\) VJPs to compute Jacobian (\\(m=1\\) for e.g. neural networks with scalar loss)\n\nVJPs and JVPs compose really really well due to the chain rule\nwe are not actually allocating potential huge Jacobian matrices but working with functions\n\nfunctions computing JVPs: pushforwards\nfunctions computing VJPs: pullbacks\n\ngood way to broadly categorize AD systems\n\nthere are other exotic approaches\n\nStructure of Autodiff in Julia (compared to e.g. Python) “Julia Dreams Big”\n\nAmbitious goal: language-wide AD\n\nPackages use different AD “backends”\n\nPyTorch and JAX: sub-ecosystems\n\nAD “backends” have their own ecosystems\n\n\nReverse-mode’s “two language problem”\n\nDifferent ways to write Julia code (see “1.5 language problem”)\nIn autodiff it’s reversed (Zygote doesn’t support mutation)\n\nUsing Julia AD in 2024\n\nThere are three types of users:\n\npeople developing AD systems\npeople who want to make their functions differentiable\npeople who want to differentiate over a function\n\nAD developers\nMaking functions differentiable\n\nProbably want compatibility with as many backends as possible\nHow do you do this with ChainRules, Enzyme, ForwardDiff while being fast?\nIs it even possible to have code differentiable across all backends?\n\nDifferentiating over a function\n\nWhich backend is compatible with my problem?\nWhich backend is the fastest?\n\n\nThe solutions (?)\n\nReverse-diff over mutating code being solved by Enzyme\n\nWhy don’t we all just use Enzyme? Complicated interface\n\nAbstractDiff / Diff’Interface\n\nAbstract API allows quickly testing all backends and benchmarking them against each other\n\n\n\n\n\n\n\nhttps://adrianhill.de/julia-ml-course/L6_Automatic_Differentiation/\nhttps://jax.readthedocs.io/en/latest/notebooks/autodiff_cookbook.html"
+  },
+  {
+    "objectID": "ideas.html#title",
+    "href": "ideas.html#title",
+    "title": "JuliaCon talk on AD",
+    "section": "",
+    "text": "The state of automatic differentiation in Julia\nAutodiff in Julia from the user perspective\nA quick guide to autodiff in Julia\nA quick tour of AD in Julia\nNavigating the Julia AD ecosystem\nAD in Julia: A Beginner’s Guide to Backends and Beyond\nFrom Basics to Backends: A Complete Guide to Automatic Differentiation in Julia"
+  },
+  {
+    "objectID": "ideas.html#draft-outline",
+    "href": "ideas.html#draft-outline",
+    "title": "JuliaCon talk on AD",
+    "section": "",
+    "text": "Complexity of the Julia ecosystem\n\nNumber of backends can be overwhelming / confusing (just open https://juliadiff.org/)\n\nDevs: Which backend do you use?\nUsers: Which function/method is differentiable with which backend?\n\nLots of folklore in Julia community\n\nA quick taxonomy of AD systems\n\nWe want gradients and more generally Jacobians\nAD systems only compute VJPs and JVPs\n\nFor function \\(f: \\mathbb{R}^n \\rightarrow \\mathbb{R}^m\\)\n\n\\(n\\) JVPs to compute Jacobian\n\\(m\\) VJPs to compute Jacobian (\\(m=1\\) for e.g. neural networks with scalar loss)\n\nVJPs and JVPs compose really really well due to the chain rule\nwe are not actually allocating potential huge Jacobian matrices but working with functions\n\nfunctions computing JVPs: pushforwards\nfunctions computing VJPs: pullbacks\n\ngood way to broadly categorize AD systems\n\nthere are other exotic approaches\n\nStructure of Autodiff in Julia (compared to e.g. Python) “Julia Dreams Big”\n\nAmbitious goal: language-wide AD\n\nPackages use different AD “backends”\n\nPyTorch and JAX: sub-ecosystems\n\nAD “backends” have their own ecosystems\n\n\nReverse-mode’s “two language problem”\n\nDifferent ways to write Julia code (see “1.5 language problem”)\nIn autodiff it’s reversed (Zygote doesn’t support mutation)\n\nUsing Julia AD in 2024\n\nThere are three types of users:\n\npeople developing AD systems\npeople who want to make their functions differentiable\npeople who want to differentiate over a function\n\nAD developers\nMaking functions differentiable\n\nProbably want compatibility with as many backends as possible\nHow do you do this with ChainRules, Enzyme, ForwardDiff while being fast?\nIs it even possible to have code differentiable across all backends?\n\nDifferentiating over a function\n\nWhich backend is compatible with my problem?\nWhich backend is the fastest?\n\n\nThe solutions (?)\n\nReverse-diff over mutating code being solved by Enzyme\n\nWhy don’t we all just use Enzyme? Complicated interface\n\nAbstractDiff / Diff’Interface\n\nAbstract API allows quickly testing all backends and benchmarking them against each other"
+  },
+  {
+    "objectID": "ideas.html#sources",
+    "href": "ideas.html#sources",
+    "title": "JuliaCon talk on AD",
+    "section": "",
+    "text": "https://adrianhill.de/julia-ml-course/L6_Automatic_Differentiation/\nhttps://jax.readthedocs.io/en/latest/notebooks/autodiff_cookbook.html"
+  },
+  {
+    "objectID": "index.html#motivation",
+    "href": "index.html#motivation",
+    "title": "Gradients for everyone",
+    "section": "Motivation",
+    "text": "Motivation\n\nWhat is a derivative?\nWhy do we care?"
+  },
+  {
+    "objectID": "index.html#differentiable-programming",
+    "href": "index.html#differentiable-programming",
+    "title": "Gradients for everyone",
+    "section": "Differentiable programming",
+    "text": "Differentiable programming\n\nA function is not just math\nBlocks of code are functions too"
+  },
+  {
+    "objectID": "index.html#three-types-of-users",
+    "href": "index.html#three-types-of-users",
+    "title": "Gradients for everyone",
+    "section": "Three types of users",
+    "text": "Three types of users\n\nAD users: want to differentiate through functions\nAD enablers: want to write differentiable functions\nAD developers: want to create new AD systems"
+  },
+  {
+    "objectID": "index.html#julia-vs.-python",
+    "href": "index.html#julia-vs.-python",
+    "title": "Gradients for everyone",
+    "section": "Julia vs. Python",
+    "text": "Julia vs. Python\n\nIn Python, things are simple and boring: JAX, PyTorch or TensorFlow\nIn Julia, things are complicated and fun: https://juliadiff.org/\nA lot of folklore and hidden knowledge, hard to see straight\nHow to choose an AD backend and make it work?"
+  },
+  {
+    "objectID": "index.html#a-multifaceted-concept",
+    "href": "index.html#a-multifaceted-concept",
+    "title": "Gradients for everyone",
+    "section": "A multifaceted concept",
+    "text": "A multifaceted concept\nSee Blondel and Roulet (2024) for a deep dive:"
+  },
+  {
+    "objectID": "index.html#numeric-differentiation",
+    "href": "index.html#numeric-differentiation",
+    "title": "Gradients for everyone",
+    "section": "Numeric differentiation",
+    "text": "Numeric differentiation"
+  },
+  {
+    "objectID": "index.html#symbolic-differentiation",
+    "href": "index.html#symbolic-differentiation",
+    "title": "Gradients for everyone",
+    "section": "Symbolic differentiation",
+    "text": "Symbolic differentiation"
+  },
+  {
+    "objectID": "index.html#algorithmic-differentiation",
+    "href": "index.html#algorithmic-differentiation",
+    "title": "Gradients for everyone",
+    "section": "Algorithmic differentiation",
+    "text": "Algorithmic differentiation"
+  },
+  {
+    "objectID": "index.html#forward-mode-theory",
+    "href": "index.html#forward-mode-theory",
+    "title": "Gradients for everyone",
+    "section": "Forward mode – theory",
+    "text": "Forward mode – theory"
+  },
+  {
+    "objectID": "index.html#forward-mode-implementation",
+    "href": "index.html#forward-mode-implementation",
+    "title": "Gradients for everyone",
+    "section": "Forward mode – implementation",
+    "text": "Forward mode – implementation"
+  },
+  {
+    "objectID": "index.html#reverse-mode-theory",
+    "href": "index.html#reverse-mode-theory",
+    "title": "Gradients for everyone",
+    "section": "Reverse mode – theory",
+    "text": "Reverse mode – theory"
+  },
+  {
+    "objectID": "index.html#reverse-mode-implementation",
+    "href": "index.html#reverse-mode-implementation",
+    "title": "Gradients for everyone",
+    "section": "Reverse mode – implementation",
+    "text": "Reverse mode – implementation"
+  },
+  {
+    "objectID": "index.html#why-so-many-backends",
+    "href": "index.html#why-so-many-backends",
+    "title": "Gradients for everyone",
+    "section": "Why so many backends?",
+    "text": "Why so many backends?\n\nConflicting paradigms:\n\nnumeric vs. symbolic vs. algorithmic\nsource-to-source vs. operator overloading\nJulia level vs. LLVM level\n\nCover varying subsets of the language\nHistorical reasons: developed by different people"
+  },
+  {
+    "objectID": "index.html#useful-criteria",
+    "href": "index.html#useful-criteria",
+    "title": "Gradients for everyone",
+    "section": "Useful criteria",
+    "text": "Useful criteria\n\nDoes this backend execute without error?\nDoes it return the right derivative?\nDoes it run fast enough for me?"
+  },
+  {
+    "objectID": "index.html#a-simple-decision-tree",
+    "href": "index.html#a-simple-decision-tree",
+    "title": "Gradients for everyone",
+    "section": "A simple decision tree",
+    "text": "A simple decision tree\n\nFollow recommendations of high-level library (e.g. Flux.jl)\nOtherwise, choose between forward and reverse mode based on input and output dimensions\nTry out the most battle-tested backends:\n\n\n\nForward mode\n\nForwardDiff\nEnzyme\n\n\nReverse mode\n\nZygote\nEnzyme\n\n\nIf nothing works, fall back on finite differences"
+  },
+  {
+    "objectID": "index.html#differentiationinterface",
+    "href": "index.html#differentiationinterface",
+    "title": "Gradients for everyone",
+    "section": "DifferentiationInterface",
+    "text": "DifferentiationInterface"
+  },
+  {
+    "objectID": "index.html#typical-failures",
+    "href": "index.html#typical-failures",
+    "title": "Gradients for everyone",
+    "section": "Typical failures",
+    "text": "Typical failures\n\nFloat64 conversion in ForwardDiff\nMutation in Zygote\nUgly LLVM vomit in Enzyme"
+  },
+  {
+    "objectID": "index.html#forwarddiff-type-genericity",
+    "href": "index.html#forwarddiff-type-genericity",
+    "title": "Gradients for everyone",
+    "section": "ForwardDiff: type-genericity",
+    "text": "ForwardDiff: type-genericity"
+  },
+  {
+    "objectID": "index.html#zygote-custom-rules",
+    "href": "index.html#zygote-custom-rules",
+    "title": "Gradients for everyone",
+    "section": "Zygote: custom rules",
+    "text": "Zygote: custom rules"
+  },
+  {
+    "objectID": "index.html#enzyme-type-stability",
+    "href": "index.html#enzyme-type-stability",
+    "title": "Gradients for everyone",
+    "section": "Enzyme: type-stability",
+    "text": "Enzyme: type-stability"
+  },
+  {
+    "objectID": "index.html#differentiationinterfacetest",
+    "href": "index.html#differentiationinterfacetest",
+    "title": "Gradients for everyone",
+    "section": "DifferentiationInterfaceTest",
+    "text": "DifferentiationInterfaceTest"
+  },
+  {
+    "objectID": "index.html#whats-the-point",
+    "href": "index.html#whats-the-point",
+    "title": "Gradients for everyone",
+    "section": "What’s the point?",
+    "text": "What’s the point?\n\nWhy don’t we all use Enzyme?\nBecause 3 years ago it was “why don’t we all use Diffractor / Zygote?”\nNew solutions like Tapir or FastDifferentiation enable different tradeoffs"
+  },
+  {
+    "objectID": "index.html#differentiationinterface-differentiationinterfacetest",
+    "href": "index.html#differentiationinterface-differentiationinterfacetest",
+    "title": "Gradients for everyone",
+    "section": "DifferentiationInterface & DifferentiationInterfaceTest",
+    "text": "DifferentiationInterface & DifferentiationInterfaceTest\n\nSometimes, a little performance loss is acceptable for a simpler API\nSystematic test suites catch many errors"
+  },
+  {
+    "objectID": "index.html#references",
+    "href": "index.html#references",
+    "title": "Gradients for everyone",
+    "section": "References",
+    "text": "References\n\n\nBlondel, Mathieu, and Vincent Roulet. 2024. “The Elements of Differentiable Programming.” arXiv. https://doi.org/10.48550/arXiv.2403.14606."
+  }
+]
