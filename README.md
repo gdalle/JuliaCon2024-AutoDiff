@@ -1,8 +1,8 @@
 # JuliaCon 2024 - AutoDiff talk
 
-## Slides
+[![Slides badge](https://img.shields.io/badge/preview-slides-blue)](https://gdalle.github.io/JuliaCon2024-AutoDiff/)
 
-Available at <https://gdalle.github.io/JuliaCon2024-AutoDiff/>.
+Slides for the talk [*Gradients for everyone: a quick guide to autodiff in Julia*](https://pretalx.com/juliacon2024/talk/YGZYWK/) at [JuliaCon 2024](https://juliacon.org/2024/).
 
 ## Quarto setup
 
