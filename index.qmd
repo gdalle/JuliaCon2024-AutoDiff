@@ -1,0 +1,155 @@
+---
+title: "Gradients for everyone"
+subtitle: "A quick guide to autodiff in Julia"
+author:
+  - name: Guillaume Dalle
+    orcid: 0000-0003-4866-1687
+    email: guillaume.dalle@epfl.ch
+    affiliation: 
+      - name: EPFL
+      - department: IdePHICS, INDY & SPOC laboratories
+  - name: Adrian Hill
+    orcid: 0009-0009-5977-301X
+    email: gh@adrianhill.de
+    affiliation: 
+      - name: TU Berlin
+      - department: Machine Learning group
+date: "2024-07-11"
+bibliography: AutoDiff.bib
+engine: julia
+format:
+  revealjs:
+    toc: true
+    toc-depth: 1
+    slide-number: true
+    overview: true
+    code-line-numbers: false
+execute:
+    echo: true
+---
+
+# Introduction
+
+## Motivation
+
+- What is a derivative?
+- Why do we care?
+
+## Differentiable programming
+
+- A function is not just math
+- Blocks of code are functions too
+
+## Three types of users
+
+1. AD users: want to differentiate through functions
+2. AD enablers: want to write differentiable functions
+3. AD developers: want to create new AD systems
+
+## Julia vs. Python
+
+- In Python, things are simple and boring: JAX, PyTorch or TensorFlow
+- In Julia, things are complicated and fun: <https://juliadiff.org/>
+- A lot of folklore and hidden knowledge, hard to see straight
+- How to choose an AD backend and make it work?
+
+# How AD works
+
+## A multifaceted concept
+
+See @blondelElementsDifferentiableProgramming2024 for a deep dive:
+
+## Numeric differentiation
+
+## Symbolic differentiation
+
+## Algorithmic differentiation
+
+## Forward mode -- theory
+
+## Forward mode -- implementation
+
+## Reverse mode -- theory
+
+## Reverse mode -- implementation
+
+# Using AD
+
+## Why so many backends?
+
+- Conflicting paradigms:
+  - numeric vs. symbolic vs. algorithmic
+  - source-to-source vs. operator overloading
+  - Julia level vs. LLVM level
+- Cover varying subsets of the language
+- Historical reasons: developed by different people
+
+## Useful criteria
+
+- Does this backend execute without error?
+- Does it return the right derivative?
+- Does it run fast enough for me?
+
+## A simple decision tree
+
+1. Follow recommendations of high-level library (e.g. Flux.jl)
+2. Otherwise, choose between forward and reverse mode based on input and output dimensions
+3. Try out the most battle-tested backends:
+
+:::: {.columns}
+
+::: {.column width="50%"}
+Forward mode
+
+- ForwardDiff
+- Enzyme
+:::
+
+::: {.column width="50%"}
+Reverse mode
+
+- Zygote
+- Enzyme
+:::
+
+4. If nothing works, fall back on finite differences
+
+::::
+
+## DifferentiationInterface
+
+# Enabling AD
+
+## Typical failures
+
+- `Float64` conversion in ForwardDiff
+- Mutation in Zygote
+- Ugly LLVM vomit in Enzyme
+
+## ForwardDiff: type-genericity
+
+## Zygote: custom rules
+
+## Enzyme: type-stability
+
+## DifferentiationInterfaceTest
+
+# Developing AD
+
+## What's the point?
+
+- Why don't we all use Enzyme?
+- Because 3 years ago it was "why don't we all use Diffractor / Zygote?"
+- New solutions like Tapir or FastDifferentiation enable different tradeoffs
+
+## DifferentiationInterface & DifferentiationInterfaceTest
+
+- Sometimes, a little performance loss is acceptable for a simpler API
+- Systematic test suites catch many errors
+
+# Appendix
+
+## References
+
+::: {#refs}
+:::
