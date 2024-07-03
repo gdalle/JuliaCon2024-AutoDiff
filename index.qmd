@@ -52,9 +52,9 @@ Slides available on GitHub:
 
 ## Three types of AD users
 
-1. **Package users** want to differentiate through functions
+1. **Backend developers** want to create new AD systems
 2. **Package developers** want to write differentiable functions
-3. **Backend developers** want to create new AD systems
+3. **Package users** want to differentiate through functions
 
 ## Python vs. Julia
 
@@ -143,35 +143,30 @@ See @blondelElementsDifferentiableProgramming2024 for a deep dive:
 ## Forward mode -- Theory {.smaller}
 * Assuming a function $f(x) = f^N(\ldots f^2(f^1(x)))$ with intermediate activations
   $$
-  \begin{equation}
-    h_1 = f^1(x) ,\quad 
-    h_2 = f^2(f^1(x)) ,\quad
-    h_k = f^{k}(h_{k-1})
-  \end{equation} \quad ,
+  h_1 = f^1(x) \,,\quad 
+  h_2 = f^2(f^1(x)) \,,\quad
+  h_k = f^{k}(h_{k-1}) \,,
   $$
 
   we can compute JVPs of $f$ by **forward-accumulating** JVPs of $f^i$: 
   $$
   % parentheses for emphasis
-  \begin{equation}
   J_f\big|_x \cdot v
   = J_{f^{N  }}\big|_{h_{N-1}} \cdot
     \Big( \ldots \cdot
     \Big( J_{f^{2  }}\big|_{h_{1  }} \cdot
-    \Big( J_{f^{1  }}\big|_{x} \cdot v \Big)\Big)\Big)
-  \end{equation}
+    \Big( J_{f^{1  }}\big|_{x} \cdot v \Big)\Big)
+  \Big)
   $$
 
 * or in terms of **pushforwards**:
   $$
-  \begin{equation}
   \mathcal{D}f_x(v)
   = \big(
-  \mathcal{D}f^{N}_{h_{N-1}} \circ \ldots \circ
-	\mathcal{D}f^2_{h_1}  \circ
-	\mathcal{D}f^1_{x}
+    \mathcal{D}f^{N}_{h_{N-1}} \circ \ldots \circ
+    \mathcal{D}f^2_{h_1}  \circ
+    \mathcal{D}f^1_{x}
   \big)(v)  
-  \end{equation}
   $$
   
 ```{julia}
@@ -194,25 +189,21 @@ svgbob"""
 * we can compute VJPs of $f$ by **reverse-accumulating** VJPs of $f^i$: 
   $$
   % parentheses for emphasis
-  \begin{equation}
   w^T \cdot J_f\big|_x
   = \Big(\Big(\Big( w^T \cdot
     J_{f^{N  }}\big|_{h_{N-1}} \Big) \cdot
     J_{f^{N-1}}\big|_{h_{N-2}} \Big) \cdot \ldots \Big)  \cdot
     J_{f^{1  }}\big|_x
-  \end{equation}
   $$
 
 * or in terms of **pullbacks**:
   $$
-  \begin{equation}
   \mathcal{D}^{*}f_x(w)
   = \big(
     \mathcal{D}^{*}f^{1  }_x  \circ \ldots \circ
     \mathcal{D}^{*}f^{N-1}_{h_{N-2}} \circ
     \mathcal{D}^{*}f^{N  }_{h_{N-1}} 
-  \big) (w) \quad .
-  \end{equation}
+  \big) (w)
   $$
 
 ```{julia}
@@ -238,7 +229,7 @@ svgbob"""
 - Conflicting paradigms:
   - numeric vs. symbolic vs. algorithmic
   - source-to-source vs. operator overloading
-  - Julia level vs. LLVM level
+  - Julia AST vs. Julia IR vs. LLVM level
 - Cover varying subsets of the language
 - Historical reasons: developed by different people
 
