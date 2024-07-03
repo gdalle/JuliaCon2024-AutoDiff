@@ -29,6 +29,15 @@ execute:
     echo: true
 ---
 
+
+## Follow along
+<!-- Ideally, we figure out how to put this on the title slide -->
+Slides available on GitHub: 
+
+![](img/qr/qrcode.png)
+
+[github.com/gdalle/JuliaCon2024-AutoDiff](https://github.com/gdalle/JuliaCon2024-AutoDiff)
+
 # Introduction
 
 ## Motivation
