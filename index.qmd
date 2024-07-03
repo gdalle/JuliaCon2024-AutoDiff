@@ -73,10 +73,10 @@ See @blondelElementsDifferentiableProgramming2024 for a deep dive:
 
 ## Symbolic differentiation
 
-## Algorithmic differentiation
-* Let's look at a function $h(x)=g(f(x))$ composed from two differentiable functions $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$ and $g: \mathbb{R}^m \rightarrow \mathbb{R}^p$.
+## Algorithmic differentiation  {.smaller}
+* Let's look at a function $h(x)=g(f(x))$ composed from two differentiable functions $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$ and $g: \mathbb{R}^m \rightarrow \mathbb{R}^p$
   $$
-  h = g \circ f\
+  h = g \circ f \quad .
   $$
 
 * The Jacobian of $h$ can be obtained from the Jacobians of $g$ and $f$ using the **chain rule**:
@@ -86,58 +86,148 @@ See @blondelElementsDifferentiableProgramming2024 for a deep dive:
   $$
 
 * For functions with "deeper" compositional structure, we need to compute the products of many Jacobians.
-  * If implemented naively, full Jacobians requires a lot of memory
+  * If implemented naively, full Jacobians require a lot of memory
   * **Instead, let's do this matrix-free using JVPs and VJPs!**
 
+## Jacobian-vector products {.smaller}
 
-## Forward mode -- Theory
-Forward accumulation on a function $f(x) = f^N(\ldots f^2(f^1(x)))$:
+* Also called **JVPs**, **pushforwards** or **forward rules**
+* Multiplying Jacobian with $i$-th column basis vector $e_i$ computes $i$-th column of Jacobian 
+  $$
+  \begin{equation}
+  J_f\big|_x \cdot e_i
+  = \begin{bmatrix}
+      \dfrac{\partial f_1}{\partial x_1}\Bigg|_x & \cdots &
+    \dfrac{\partial f_1}{\partial x_n}\Bigg|_x\\
+      \vdots                             & \ddots & \vdots\\
+      \dfrac{\partial f_m}{\partial x_1}\Bigg|_x & \cdots &
+    \dfrac{\partial f_m}{\partial x_n}\Bigg|_x
+  \end{bmatrix} \cdot e_i
+  = \begin{bmatrix}
+      \dfrac{\partial f_1}{\partial x_i}\Bigg|_x \\
+      \vdots \\
+      \dfrac{\partial f_m}{\partial x_i}\Bigg|_x \\
+  \end{bmatrix}
+  =: \mathcal{D}f_x(e_i)
+  \end{equation}
+  $$
 
+* For $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$, computing the full $m \times n$ Jacobian requires computing $n\,$ JVPs:  
+  one for each column, as many as the **input dimensionality** of $f$.
+
+## Vector-Jacobian products {.smaller}
+
+* Also called **VJPs**, **pullbacks** or **reverse rules**
+* Multiplying $i$-th row basis vector $e_i^T$ with Jacobian computes $i$-th row of Jacobian 
+  $$
+  \begin{align}
+  e_i^T \cdot J_f\big|_x
+  &= e_i^T \cdot \begin{bmatrix}
+      \dfrac{\partial f_1}{\partial x_1}\Bigg|_x & \cdots &
+    \dfrac{\partial f_1}{\partial x_n}\Bigg|_x\\
+      \vdots                             & \ddots & \vdots\\
+      \dfrac{\partial f_m}{\partial x_1}\Bigg|_x & \cdots &
+    \dfrac{\partial f_m}{\partial x_n}\Bigg|_x
+  \end{bmatrix} \\[0.5em]
+  &= \hspace{1.35em}\begin{bmatrix}
+      \dfrac{\partial f_i}{\partial x_1}\Bigg|_x & \cdots &
+    \dfrac{\partial f_i}{\partial x_n}\Bigg|_x
+  \end{bmatrix}
+  =: \mathcal{D}^{*}f_x(e_i)
+  \end{align}
+  $$
+
+* Computing the full $m \times n$ Jacobian requires computing $m\,$ VJPs: 
+  one for each row, as many as the **output dimensionality** of $f$.
+
+## Forward mode -- Theory {.smaller}
+* Assuming a function $f(x) = f^N(\ldots f^2(f^1(x)))$ with intermediate activations
+  $$
+  \begin{align}
+    h_1 = f^1(x) ,\quad 
+    h_2 = f^2(f^1(x)) ,\quad
+    h_k = f^{k}(h_{k-1})
+  \end{align} \quad ,
+  $$
+
+  we can compute JVPs of $f$ by **forward-accumulating** JVPs of $f^i$: 
+  $$
+  % parentheses for emphasis
+  \begin{align}
+  J_f\big|_x \cdot v
+  = 	J_{f^{N  }}\big|_{h_{N-1}} \cdot
+    \Big( \ldots \cdot
+    \Big( J_{f^{2  }}\big|_{h_{1  }} \cdot
+    \Big( J_{f^{1  }}\big|_{x} \cdot v \Big)\Big)\Big)
+  \end{align}
+  $$
+
+* or in terms of **pushforwards**:
+  $$
+  \begin{align}
+  \mathcal{D}f_x(v)
+  = \big(
+  \mathcal{D}f^{N}_{h_{N-1}} \circ \ldots \circ
+	\mathcal{D}f^2_{h_1}  \circ
+	\mathcal{D}f^1_{x}
+  \big)(v)  
+  \end{align}
+  $$
+  
 ```{julia}
 #| echo: false
 using Kroki # maybe svgbob can be used directly inside revealjs?
 svgbob"""
  "x"  ┌─────┐ "h₁" ┌─────┐"h₂"    "hₙ₋₁"┌─────┐  "y"
-──┬──►│ "f¹"├──┬──►│ "f²"├───► .. ──┬──►│ "fⁿ"├───────►
+──┬──►│ "f¹"├──┬──►│ "f²"├───► .. ──┬──►│ "fᴺ"├───────►
   │   └─────┘  │   └─────┘          │   └─────┘
   │   ┌─────┐  │   ┌─────┐          │   ┌─────┐
-  └──►│"𝒟f¹"│  └──►│"𝒟f²"│          └──►│"𝒟fⁿ"│
+  └──►│"𝒟f¹"│  └──►│"𝒟f²"│          └──►│"𝒟fᴺ"│
 ─────►│     ├─────►│     ├───► .. ─────►│     ├───────►
  "v"  └─────┘      └─────┘              └─────┘"𝒟fₓ(v)"
 """
 ```
 
-Common names for functions `𝒟f`:
-
-* Jacobian-vector product (JVP)
-* pushforward
-* forward-rule (`frule`)
-
 ## Forward mode -- Implementation
 
+## Reverse mode -- Theory {.smaller}
+* we can compute VJPs of $f$ by **reverse-accumulating** VJPs of $f^i$: 
+  $$
+  % parentheses for emphasis
+  \begin{align}
+  w^T \cdot J_f\big|_x
+  &= \Big(\Big(\Big( w^T \cdot
+    J_{f^{N  }}\big|_{h_{N-1}} \Big) \cdot
+    J_{f^{N-1}}\big|_{h_{N-2}} \Big) \cdot \ldots \Big)  \cdot
+    J_{f^{1  }}\big|_x
+  \end{align}
+  $$
 
-## Reverse mode -- Theory
-Reverse accumulation on a function $f(x) = f^N(\ldots f^2(f^1(x)))$:
+* or in terms of **pullbacks**:
+  $$
+  \begin{align}
+  \mathcal{D}^{*}f_x(w)
+  = \big(
+    \mathcal{D}^{*}f^{1  }_x  \circ \ldots \circ
+    \mathcal{D}^{*}f^{N-1}_{h_{N-2}} \circ
+    \mathcal{D}^{*}f^{N  }_{h_{N-1}} 
+  \big) (w) \quad .
+  \end{align}
+  $$
+
 ```{julia}
 #| echo: false
 using Kroki # maybe svgbob can be used directly inside revealjs?
 svgbob"""
     "x"   ┌──────┐ "h₁" ┌──────┐"h₂"    "hₙ₋₁"┌──────┐ "y"
-──────┬──►│  "f¹"├──┬──►│  "f²"├───► .. ──┬──►│  "fⁿ"├───►
+──────┬──►│  "f¹"├──┬──►│  "f²"├───► .. ──┬──►│  "fᴺ"├───►
       │   └──────┘  │   └──────┘          │   └──────┘
       │   ┌──────┐  │   ┌──────┐          │   ┌──────┐
-      └──►│"𝒟ᵀf¹"│  └──►│"𝒟ᵀf²"│          └──►│"𝒟ᵀfⁿ"│
+      └──►│"𝒟*f¹"│  └──►│"𝒟*f²"│          └──►│"𝒟*fᴺ"│
 ◄─────────┤      │◄─────┤      │◄─── .. ◄─────┤      │◄───
-"𝒟ᵀfₓ(w)" └──────┘      └──────┘              └──────┘ "w"
+"𝒟*fₓ(w)" └──────┘      └──────┘              └──────┘ "w"
 """
 ```
-
-Common names for functions `𝒟ᵀf`:
-
-* Vector-Jacobian product (VJP)
-* pullback
-* reverse-rule (`rrule`)
-
 
 ## Reverse mode -- Implementation
 
