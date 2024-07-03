@@ -274,7 +274,35 @@ Reverse mode
 
 ::::
 
-## DifferentiationInterface
+## DifferentiationInterface.jl
+
+Supported backends:
+
+<!-- Using columns to fit everything on one slide -->
+:::: {.columns}
+
+::: {.column width="50%"}
+* [ChainRulesCore.jl](https://github.com/JuliaDiff/ChainRulesCore.jl)
+* [Diffractor.jl](https://github.com/JuliaDiff/Diffractor.jl)
+* [Enzyme.jl](https://github.com/EnzymeAD/Enzyme.jl)
+* [FastDifferentiation.jl](https://github.com/brianguenter/FastDifferentiation.jl)
+* [FiniteDiff.jl](https://github.com/JuliaDiff/FiniteDiff.jl)
+* [FiniteDifferences.jl](https://github.com/JuliaDiff/FiniteDifferences.jl)
+* [ForwardDiff.jl](https://github.com/JuliaDiff/ForwardDiff.jl)
+:::
+
+::: {.column width="50%"}
+* [PolyesterForwardDiff.jl](https://github.com/JuliaDiff/PolyesterForwardDiff.jl)
+* [ReverseDiff.jl](https://github.com/JuliaDiff/ReverseDiff.jl)
+* [Symbolics.jl](https://github.com/JuliaSymbolics/Symbolics.jl)
+* [Tapir.jl](https://github.com/withbayes/Tapir.jl)
+* [Tracker.jl](https://github.com/FluxML/Tracker.jl)
+* [Zygote.jl](https://github.com/FluxML/Zygote.jl)
+:::
+
+::::
+
+Using [ADTypes.jl](https://github.com/SciML/ADTypes.jl) to select backends.
 
 # Enabling AD
 
@@ -300,7 +328,7 @@ Reverse mode
 - Because 3 years ago it was "why don't we all use Diffractor / Zygote?"
 - New solutions like Tapir or FastDifferentiation enable different tradeoffs
 
-## DifferentiationInterface & DifferentiationInterfaceTest
+## DifferentiationInterface.jl & DifferentiationInterfaceTest.jl
 
 - Sometimes, a little performance loss is acceptable for a simpler API
 - Systematic test suites catch many errors
