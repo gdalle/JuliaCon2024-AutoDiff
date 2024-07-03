@@ -41,13 +41,13 @@ execute:
 - A function is not just math
 - Blocks of code are functions too
 
-## Three types of users
+## Three types of AD users
 
-1. AD users: want to differentiate through functions
-2. AD enablers: want to write differentiable functions
-3. AD developers: want to create new AD systems
+1. **Package users** want to differentiate through functions
+2. **Package developers** want to write differentiable functions
+3. **Backend developers** want to create new AD systems
 
-## Julia vs. Python
+## Python vs. Julia
 
 - In Python, things are simple and boring: JAX, PyTorch or TensorFlow
 - In Julia, things are complicated and fun: <https://juliadiff.org/>
@@ -65,14 +65,72 @@ See @blondelElementsDifferentiableProgramming2024 for a deep dive:
 ## Symbolic differentiation
 
 ## Algorithmic differentiation
+* Let's look at a function $h(x)=g(f(x))$ composed from two differentiable functions $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$ and $g: \mathbb{R}^m \rightarrow \mathbb{R}^p$.
+  $$
+  h = g \circ f\
+  $$
 
-## Forward mode -- theory
+* The Jacobian of $h$ can be obtained from the Jacobians of $g$ and $f$ using the **chain rule**:
 
-## Forward mode -- implementation
+  $$
+  J_h\big|_x = J_{g}\big|_{f(x)} \cdot J_{f}\big|_{x}
+  $$
 
-## Reverse mode -- theory
+* For functions with "deeper" compositional structure, we need to compute the products of many Jacobians.
+  * If implemented naively, full Jacobians requires a lot of memory
+  * **Instead, let's do this matrix-free using JVPs and VJPs!**
 
-## Reverse mode -- implementation
+
+## Forward mode -- Theory
+Forward accumulation on a function $f(x) = f^N(\ldots f^2(f^1(x)))$:
+
+```{julia}
+#| echo: false
+using Kroki # maybe svgbob can be used directly inside revealjs?
+svgbob"""
+ "x"  ┌─────┐ "h₁" ┌─────┐"h₂"    "hₙ₋₁"┌─────┐  "y"
+──┬──►│ "f¹"├──┬──►│ "f²"├───► .. ──┬──►│ "fⁿ"├───────►
+  │   └─────┘  │   └─────┘          │   └─────┘
+  │   ┌─────┐  │   ┌─────┐          │   ┌─────┐
+  └──►│"𝒟f¹"│  └──►│"𝒟f²"│          └──►│"𝒟fⁿ"│
+─────►│     ├─────►│     ├───► .. ─────►│     ├───────►
+ "v"  └─────┘      └─────┘              └─────┘"𝒟fₓ(v)"
+"""
+```
+
+Common names for functions `𝒟f`:
+
+* Jacobian-vector product (JVP)
+* pushforward
+* forward-rule (`frule`)
+
+## Forward mode -- Implementation
+
+
+## Reverse mode -- Theory
+Reverse accumulation on a function $f(x) = f^N(\ldots f^2(f^1(x)))$:
+```{julia}
+#| echo: false
+using Kroki # maybe svgbob can be used directly inside revealjs?
+svgbob"""
+    "x"   ┌──────┐ "h₁" ┌──────┐"h₂"    "hₙ₋₁"┌──────┐ "y"
+──────┬──►│  "f¹"├──┬──►│  "f²"├───► .. ──┬──►│  "fⁿ"├───►
+      │   └──────┘  │   └──────┘          │   └──────┘
+      │   ┌──────┐  │   ┌──────┐          │   ┌──────┐
+      └──►│"𝒟ᵀf¹"│  └──►│"𝒟ᵀf²"│          └──►│"𝒟ᵀfⁿ"│
+◄─────────┤      │◄─────┤      │◄─── .. ◄─────┤      │◄───
+"𝒟ᵀfₓ(w)" └──────┘      └──────┘              └──────┘ "w"
+"""
+```
+
+Common names for functions `𝒟ᵀf`:
+
+* Vector-Jacobian product (VJP)
+* pullback
+* reverse-rule (`rrule`)
+
+
+## Reverse mode -- Implementation
 
 # Using AD
 
