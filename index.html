@@ -31,6 +31,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     /* CSS for citations */
     div.csl-bib-body { }
     div.csl-entry {
@@ -390,6 +455,7 @@ Adrian Hill <a href="https://orcid.org/0009-0009-5977-301X" class="quarto-title-
 <li><a href="#/introduction" id="/toc-introduction">Introduction</a></li>
 <li><a href="#/how-ad-works" id="/toc-how-ad-works">How AD works</a></li>
 <li><a href="#/using-ad" id="/toc-using-ad">Using AD</a></li>
+<li><a href="#/differentiationinterface.jl" id="/toc-differentiationinterface.jl">DifferentiationInterface.jl</a></li>
 <li><a href="#/enabling-ad" id="/toc-enabling-ad">Enabling AD</a></li>
 <li><a href="#/developing-ad" id="/toc-developing-ad">Developing AD</a></li>
 <li><a href="#/appendix" id="/toc-appendix">Appendix</a></li>
@@ -525,31 +591,31 @@ e_i^T \cdot J_f\big|_x
 <h2>Forward mode – Theory</h2>
 <ul>
 <li><p>Assuming a function <span class="math inline">\(f(x) = f^N(\ldots f^2(f^1(x)))\)</span> with intermediate activations <span class="math display">\[
-\begin{align}
+\begin{equation}
   h_1 = f^1(x) ,\quad
   h_2 = f^2(f^1(x)) ,\quad
   h_k = f^{k}(h_{k-1})
-\end{align} \quad ,
+\end{equation} \quad ,
 \]</span></p>
 <p>we can compute JVPs of <span class="math inline">\(f\)</span> by <strong>forward-accumulating</strong> JVPs of <span class="math inline">\(f^i\)</span>: <span class="math display">\[
 % parentheses for emphasis
-\begin{align}
+\begin{equation}
 J_f\big|_x \cdot v
-=     J_{f^{N  }}\big|_{h_{N-1}} \cdot
+= J_{f^{N  }}\big|_{h_{N-1}} \cdot
   \Big( \ldots \cdot
   \Big( J_{f^{2  }}\big|_{h_{1  }} \cdot
   \Big( J_{f^{1  }}\big|_{x} \cdot v \Big)\Big)\Big)
-\end{align}
+\end{equation}
 \]</span></p></li>
 <li><p>or in terms of <strong>pushforwards</strong>: <span class="math display">\[
-\begin{align}
+\begin{equation}
 \mathcal{D}f_x(v)
 = \big(
 \mathcal{D}f^{N}_{h_{N-1}} \circ \ldots \circ
   \mathcal{D}f^2_{h_1}  \circ
   \mathcal{D}f^1_{x}
 \big)(v)  
-\end{align}
+\end{equation}
 \]</span></p></li>
 </ul>
 
@@ -562,23 +628,23 @@ J_f\big|_x \cdot v
 <ul>
 <li><p>we can compute VJPs of <span class="math inline">\(f\)</span> by <strong>reverse-accumulating</strong> VJPs of <span class="math inline">\(f^i\)</span>: <span class="math display">\[
 % parentheses for emphasis
-\begin{align}
+\begin{equation}
 w^T \cdot J_f\big|_x
-&amp;= \Big(\Big(\Big( w^T \cdot
+= \Big(\Big(\Big( w^T \cdot
   J_{f^{N  }}\big|_{h_{N-1}} \Big) \cdot
   J_{f^{N-1}}\big|_{h_{N-2}} \Big) \cdot \ldots \Big)  \cdot
   J_{f^{1  }}\big|_x
-\end{align}
+\end{equation}
 \]</span></p></li>
 <li><p>or in terms of <strong>pullbacks</strong>: <span class="math display">\[
-\begin{align}
+\begin{equation}
 \mathcal{D}^{*}f_x(w)
 = \big(
   \mathcal{D}^{*}f^{1  }_x  \circ \ldots \circ
   \mathcal{D}^{*}f^{N-1}_{h_{N-2}} \circ
   \mathcal{D}^{*}f^{N  }_{h_{N-1}}
 \big) (w) \quad .
-\end{align}
+\end{equation}
 \]</span></p></li>
 </ul>
 
@@ -636,10 +702,14 @@ w^T \cdot J_f\big|_x
 <li>If nothing works, fall back on finite differences</li>
 </ol>
 </div>
+</section></section>
+<section>
+<section id="differentiationinterface.jl" class="title-slide slide level1 center">
+<h1>DifferentiationInterface.jl</h1>
+
 </section>
-<section id="differentiationinterface.jl" class="slide level2">
-<h2>DifferentiationInterface.jl</h2>
-<p>Supported backends:</p>
+<section id="supported-backends" class="slide level2">
+<h2>Supported backends</h2>
 <!-- Using columns to fit everything on one slide -->
 <div class="columns">
 <div class="column" style="width:50%;">
@@ -663,6 +733,43 @@ w^T \cdot J_f\big|_x
 </ul>
 </div></div>
 <p>Using <a href="https://github.com/SciML/ADTypes.jl">ADTypes.jl</a> to select backends.</p>
+</section>
+<section id="getting-started-with-di" class="slide level2">
+<h2>Getting started with DI</h2>
+<ol type="1">
+<li><code>import</code> desired backends</li>
+</ol>
+<div id="6" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DifferentiationInterface</span></span>
+<span id="cb1-2"><a aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">ForwardDiff</span>, <span class="bu">Enzyme</span>, <span class="bu">Zygote</span></span>
+<span id="cb1-3"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(x) <span class="op">=</span> <span class="fu">sum</span>(abs2, x)</span>
+<span id="cb1-5"><a aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> [<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">3.0</span>, <span class="fl">4.0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="1">
+<li>Call <a href="https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/operators/">DI’s operators</a> using <a href="https://github.com/SciML/ADTypes.jl">ADTypes</a></li>
+</ol>
+<div id="8" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">value_and_gradient</span>(f, <span class="fu">AutoForwardDiff</span>(), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>(30.0, [2.0, 4.0, 6.0, 8.0])</code></pre>
+</div>
+</div>
+<div id="10" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">value_and_gradient</span>(f, <span class="fu">AutoEnzyme</span>(), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>(30.0, [2.0, 4.0, 6.0, 8.0])</code></pre>
+</div>
+</div>
+<div id="12" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">value_and_gradient</span>(f, <span class="fu">AutoZygote</span>(), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>(30.0, [2.0, 4.0, 6.0, 8.0])</code></pre>
+</div>
+</div>
+<ol start="3" type="1">
+<li>Increase performance via <a href="https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial1/">DI’s preparation mechanism</a></li>
+</ol>
 </section></section>
 <section>
 <section id="enabling-ad" class="title-slide slide level1 center">
@@ -686,8 +793,8 @@ w^T \cdot J_f\big|_x
 <section id="enzyme-type-stability" class="slide level2">
 <h2>Enzyme: type-stability</h2>
 </section>
-<section id="differentiationinterfacetest" class="slide level2">
-<h2>DifferentiationInterfaceTest</h2>
+<section id="differentiationinterfacetest.jl" class="slide level2">
+<h2>DifferentiationInterfaceTest.jl</h2>
 </section></section>
 <section>
 <section id="developing-ad" class="title-slide slide level1 center">
