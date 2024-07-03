@@ -42,18 +42,18 @@
     "text": "Differentiable programming\n\nA function is not just math\nBlocks of code are functions too"
   },
   {
-    "objectID": "index.html#three-types-of-users",
-    "href": "index.html#three-types-of-users",
+    "objectID": "index.html#three-types-of-ad-users",
+    "href": "index.html#three-types-of-ad-users",
     "title": "Gradients for everyone",
-    "section": "Three types of users",
-    "text": "Three types of users\n\nAD users: want to differentiate through functions\nAD enablers: want to write differentiable functions\nAD developers: want to create new AD systems"
+    "section": "Three types of AD users",
+    "text": "Three types of AD users\n\nPackage users want to differentiate through functions\nPackage developers want to write differentiable functions\nBackend developers want to create new AD systems"
   },
   {
-    "objectID": "index.html#julia-vs.-python",
-    "href": "index.html#julia-vs.-python",
+    "objectID": "index.html#python-vs.-julia",
+    "href": "index.html#python-vs.-julia",
     "title": "Gradients for everyone",
-    "section": "Julia vs. Python",
-    "text": "Julia vs. Python\n\nIn Python, things are simple and boring: JAX, PyTorch or TensorFlow\nIn Julia, things are complicated and fun: https://juliadiff.org/\nA lot of folklore and hidden knowledge, hard to see straight\nHow to choose an AD backend and make it work?"
+    "section": "Python vs. Julia",
+    "text": "Python vs. Julia\n\nIn Python, things are simple and boring: JAX, PyTorch or TensorFlow\nIn Julia, things are complicated and fun: https://juliadiff.org/\nA lot of folklore and hidden knowledge, hard to see straight\nHow to choose an AD backend and make it work?"
   },
   {
     "objectID": "index.html#a-multifaceted-concept",
@@ -81,35 +81,35 @@
     "href": "index.html#algorithmic-differentiation",
     "title": "Gradients for everyone",
     "section": "Algorithmic differentiation",
-    "text": "Algorithmic differentiation"
+    "text": "Algorithmic differentiation\n\nLet’s look at a function \\(h(x)=g(f(x))\\) composed from two differentiable functions \\(f: \\mathbb{R}^n \\rightarrow \\mathbb{R}^m\\) and \\(g: \\mathbb{R}^m \\rightarrow \\mathbb{R}^p\\). \\[\nh = g \\circ f\\\n\\]\nThe Jacobian of \\(h\\) can be obtained from the Jacobians of \\(g\\) and \\(f\\) using the chain rule:\n\\[\nJ_h\\big|_x = J_{g}\\big|_{f(x)} \\cdot J_{f}\\big|_{x}\n\\]\nFor functions with “deeper” compositional structure, we need to compute the products of many Jacobians.\n\nIf implemented naively, full Jacobians requires a lot of memory\nInstead, let’s do this matrix-free using JVPs and VJPs!"
   },
   {
     "objectID": "index.html#forward-mode-theory",
     "href": "index.html#forward-mode-theory",
     "title": "Gradients for everyone",
-    "section": "Forward mode – theory",
-    "text": "Forward mode – theory"
+    "section": "Forward mode – Theory",
+    "text": "Forward mode – Theory\nForward accumulation on a function \\(f(x) = f^N(\\ldots f^2(f^1(x)))\\):\n\nCommon names for functions 𝒟f:\n\nJacobian-vector product (JVP)\npushforward\nforward-rule (frule)"
   },
   {
     "objectID": "index.html#forward-mode-implementation",
     "href": "index.html#forward-mode-implementation",
     "title": "Gradients for everyone",
-    "section": "Forward mode – implementation",
-    "text": "Forward mode – implementation"
+    "section": "Forward mode – Implementation",
+    "text": "Forward mode – Implementation"
   },
   {
     "objectID": "index.html#reverse-mode-theory",
     "href": "index.html#reverse-mode-theory",
     "title": "Gradients for everyone",
-    "section": "Reverse mode – theory",
-    "text": "Reverse mode – theory"
+    "section": "Reverse mode – Theory",
+    "text": "Reverse mode – Theory\nReverse accumulation on a function \\(f(x) = f^N(\\ldots f^2(f^1(x)))\\):\n\nCommon names for functions 𝒟ᵀf:\n\nVector-Jacobian product (VJP)\npullback\nreverse-rule (rrule)"
   },
   {
     "objectID": "index.html#reverse-mode-implementation",
     "href": "index.html#reverse-mode-implementation",
     "title": "Gradients for everyone",
-    "section": "Reverse mode – implementation",
-    "text": "Reverse mode – implementation"
+    "section": "Reverse mode – Implementation",
+    "text": "Reverse mode – Implementation"
   },
   {
     "objectID": "index.html#why-so-many-backends",

@@ -415,16 +415,16 @@ Adrian Hill <a href="https://orcid.org/0009-0009-5977-301X" class="quarto-title-
 <li>Blocks of code are functions too</li>
 </ul>
 </section>
-<section id="three-types-of-users" class="slide level2">
-<h2>Three types of users</h2>
+<section id="three-types-of-ad-users" class="slide level2">
+<h2>Three types of AD users</h2>
 <ol type="1">
-<li>AD users: want to differentiate through functions</li>
-<li>AD enablers: want to write differentiable functions</li>
-<li>AD developers: want to create new AD systems</li>
+<li><strong>Package users</strong> want to differentiate through functions</li>
+<li><strong>Package developers</strong> want to write differentiable functions</li>
+<li><strong>Backend developers</strong> want to create new AD systems</li>
 </ol>
 </section>
-<section id="julia-vs.-python" class="slide level2">
-<h2>Julia vs.&nbsp;Python</h2>
+<section id="python-vs.-julia" class="slide level2">
+<h2>Python vs.&nbsp;Julia</h2>
 <ul>
 <li>In Python, things are simple and boring: JAX, PyTorch or TensorFlow</li>
 <li>In Julia, things are complicated and fun: <a href="https://juliadiff.org/" class="uri">https://juliadiff.org/</a></li>
@@ -449,18 +449,48 @@ Adrian Hill <a href="https://orcid.org/0009-0009-5977-301X" class="quarto-title-
 </section>
 <section id="algorithmic-differentiation" class="slide level2">
 <h2>Algorithmic differentiation</h2>
+<ul>
+<li><p>Let’s look at a function <span class="math inline">\(h(x)=g(f(x))\)</span> composed from two differentiable functions <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span> and <span class="math inline">\(g: \mathbb{R}^m \rightarrow \mathbb{R}^p\)</span>. <span class="math display">\[
+h = g \circ f\
+\]</span></p></li>
+<li><p>The Jacobian of <span class="math inline">\(h\)</span> can be obtained from the Jacobians of <span class="math inline">\(g\)</span> and <span class="math inline">\(f\)</span> using the <strong>chain rule</strong>:</p>
+<p><span class="math display">\[
+J_h\big|_x = J_{g}\big|_{f(x)} \cdot J_{f}\big|_{x}
+\]</span></p></li>
+<li><p>For functions with “deeper” compositional structure, we need to compute the products of many Jacobians.</p>
+<ul>
+<li>If implemented naively, full Jacobians requires a lot of memory</li>
+<li><strong>Instead, let’s do this matrix-free using JVPs and VJPs!</strong></li>
+</ul></li>
+</ul>
 </section>
 <section id="forward-mode-theory" class="slide level2">
-<h2>Forward mode – theory</h2>
+<h2>Forward mode – Theory</h2>
+<p>Forward accumulation on a function <span class="math inline">\(f(x) = f^N(\ldots f^2(f^1(x)))\)</span>:</p>
+
+<img data-src="index_files/figure-revealjs/cell-2-output-1.svg" class="r-stretch"><p>Common names for functions <code>𝒟f</code>:</p>
+<ul>
+<li>Jacobian-vector product (JVP)</li>
+<li>pushforward</li>
+<li>forward-rule (<code>frule</code>)</li>
+</ul>
 </section>
 <section id="forward-mode-implementation" class="slide level2">
-<h2>Forward mode – implementation</h2>
+<h2>Forward mode – Implementation</h2>
 </section>
 <section id="reverse-mode-theory" class="slide level2">
-<h2>Reverse mode – theory</h2>
+<h2>Reverse mode – Theory</h2>
+<p>Reverse accumulation on a function <span class="math inline">\(f(x) = f^N(\ldots f^2(f^1(x)))\)</span>:</p>
+
+<img data-src="index_files/figure-revealjs/cell-3-output-1.svg" class="r-stretch"><p>Common names for functions <code>𝒟ᵀf</code>:</p>
+<ul>
+<li>Vector-Jacobian product (VJP)</li>
+<li>pullback</li>
+<li>reverse-rule (<code>rrule</code>)</li>
+</ul>
 </section>
 <section id="reverse-mode-implementation" class="slide level2">
-<h2>Reverse mode – implementation</h2>
+<h2>Reverse mode – Implementation</h2>
 </section></section>
 <section>
 <section id="using-ad" class="title-slide slide level1 center">
