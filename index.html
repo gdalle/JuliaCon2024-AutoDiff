@@ -454,11 +454,11 @@ Adrian Hill <a href="https://orcid.org/0009-0009-5977-301X" class="quarto-title-
 <section id="symbolic-differentiation" class="slide level2">
 <h2>Symbolic differentiation</h2>
 </section>
-<section id="algorithmic-differentiation" class="slide level2">
+<section id="algorithmic-differentiation" class="slide level2 smaller">
 <h2>Algorithmic differentiation</h2>
 <ul>
-<li><p>Let’s look at a function <span class="math inline">\(h(x)=g(f(x))\)</span> composed from two differentiable functions <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span> and <span class="math inline">\(g: \mathbb{R}^m \rightarrow \mathbb{R}^p\)</span>. <span class="math display">\[
-h = g \circ f\
+<li><p>Let’s look at a function <span class="math inline">\(h(x)=g(f(x))\)</span> composed from two differentiable functions <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span> and <span class="math inline">\(g: \mathbb{R}^m \rightarrow \mathbb{R}^p\)</span> <span class="math display">\[
+h = g \circ f \quad .
 \]</span></p></li>
 <li><p>The Jacobian of <span class="math inline">\(h\)</span> can be obtained from the Jacobians of <span class="math inline">\(g\)</span> and <span class="math inline">\(f\)</span> using the <strong>chain rule</strong>:</p>
 <p><span class="math display">\[
@@ -466,36 +466,123 @@ J_h\big|_x = J_{g}\big|_{f(x)} \cdot J_{f}\big|_{x}
 \]</span></p></li>
 <li><p>For functions with “deeper” compositional structure, we need to compute the products of many Jacobians.</p>
 <ul>
-<li>If implemented naively, full Jacobians requires a lot of memory</li>
+<li>If implemented naively, full Jacobians require a lot of memory</li>
 <li><strong>Instead, let’s do this matrix-free using JVPs and VJPs!</strong></li>
 </ul></li>
 </ul>
 </section>
-<section id="forward-mode-theory" class="slide level2">
-<h2>Forward mode – Theory</h2>
-<p>Forward accumulation on a function <span class="math inline">\(f(x) = f^N(\ldots f^2(f^1(x)))\)</span>:</p>
-
-<img data-src="index_files/figure-revealjs/cell-2-output-1.svg" class="r-stretch"><p>Common names for functions <code>𝒟f</code>:</p>
+<section id="jacobian-vector-products" class="slide level2 smaller">
+<h2>Jacobian-vector products</h2>
 <ul>
-<li>Jacobian-vector product (JVP)</li>
-<li>pushforward</li>
-<li>forward-rule (<code>frule</code>)</li>
+<li><p>Also called <strong>JVPs</strong>, <strong>pushforwards</strong> or <strong>forward rules</strong></p></li>
+<li><p>Multiplying Jacobian with <span class="math inline">\(i\)</span>-th column basis vector <span class="math inline">\(e_i\)</span> computes <span class="math inline">\(i\)</span>-th column of Jacobian <span class="math display">\[
+\begin{equation}
+J_f\big|_x \cdot e_i
+= \begin{bmatrix}
+    \dfrac{\partial f_1}{\partial x_1}\Bigg|_x &amp; \cdots &amp;
+  \dfrac{\partial f_1}{\partial x_n}\Bigg|_x\\
+    \vdots                             &amp; \ddots &amp; \vdots\\
+    \dfrac{\partial f_m}{\partial x_1}\Bigg|_x &amp; \cdots &amp;
+  \dfrac{\partial f_m}{\partial x_n}\Bigg|_x
+\end{bmatrix} \cdot e_i
+= \begin{bmatrix}
+    \dfrac{\partial f_1}{\partial x_i}\Bigg|_x \\
+    \vdots \\
+    \dfrac{\partial f_m}{\partial x_i}\Bigg|_x \\
+\end{bmatrix}
+=: \mathcal{D}f_x(e_i)
+\end{equation}
+\]</span></p></li>
+<li><p>For <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span>, computing the full <span class="math inline">\(m \times n\)</span> Jacobian requires computing <span class="math inline">\(n\,\)</span> JVPs:<br>
+one for each column, as many as the <strong>input dimensionality</strong> of <span class="math inline">\(f\)</span>.</p></li>
 </ul>
 </section>
+<section id="vector-jacobian-products" class="slide level2 smaller">
+<h2>Vector-Jacobian products</h2>
+<ul>
+<li><p>Also called <strong>VJPs</strong>, <strong>pullbacks</strong> or <strong>reverse rules</strong></p></li>
+<li><p>Multiplying <span class="math inline">\(i\)</span>-th row basis vector <span class="math inline">\(e_i^T\)</span> with Jacobian computes <span class="math inline">\(i\)</span>-th row of Jacobian <span class="math display">\[
+\begin{align}
+e_i^T \cdot J_f\big|_x
+&amp;= e_i^T \cdot \begin{bmatrix}
+    \dfrac{\partial f_1}{\partial x_1}\Bigg|_x &amp; \cdots &amp;
+  \dfrac{\partial f_1}{\partial x_n}\Bigg|_x\\
+    \vdots                             &amp; \ddots &amp; \vdots\\
+    \dfrac{\partial f_m}{\partial x_1}\Bigg|_x &amp; \cdots &amp;
+  \dfrac{\partial f_m}{\partial x_n}\Bigg|_x
+\end{bmatrix} \\[0.5em]
+&amp;= \hspace{1.35em}\begin{bmatrix}
+    \dfrac{\partial f_i}{\partial x_1}\Bigg|_x &amp; \cdots &amp;
+  \dfrac{\partial f_i}{\partial x_n}\Bigg|_x
+\end{bmatrix}
+=: \mathcal{D}^{*}f_x(e_i)
+\end{align}
+\]</span></p></li>
+<li><p>Computing the full <span class="math inline">\(m \times n\)</span> Jacobian requires computing <span class="math inline">\(m\,\)</span> VJPs: one for each row, as many as the <strong>output dimensionality</strong> of <span class="math inline">\(f\)</span>.</p></li>
+</ul>
+</section>
+<section id="forward-mode-theory" class="slide level2 smaller">
+<h2>Forward mode – Theory</h2>
+<ul>
+<li><p>Assuming a function <span class="math inline">\(f(x) = f^N(\ldots f^2(f^1(x)))\)</span> with intermediate activations <span class="math display">\[
+\begin{align}
+  h_1 = f^1(x) ,\quad
+  h_2 = f^2(f^1(x)) ,\quad
+  h_k = f^{k}(h_{k-1})
+\end{align} \quad ,
+\]</span></p>
+<p>we can compute JVPs of <span class="math inline">\(f\)</span> by <strong>forward-accumulating</strong> JVPs of <span class="math inline">\(f^i\)</span>: <span class="math display">\[
+% parentheses for emphasis
+\begin{align}
+J_f\big|_x \cdot v
+=     J_{f^{N  }}\big|_{h_{N-1}} \cdot
+  \Big( \ldots \cdot
+  \Big( J_{f^{2  }}\big|_{h_{1  }} \cdot
+  \Big( J_{f^{1  }}\big|_{x} \cdot v \Big)\Big)\Big)
+\end{align}
+\]</span></p></li>
+<li><p>or in terms of <strong>pushforwards</strong>: <span class="math display">\[
+\begin{align}
+\mathcal{D}f_x(v)
+= \big(
+\mathcal{D}f^{N}_{h_{N-1}} \circ \ldots \circ
+  \mathcal{D}f^2_{h_1}  \circ
+  \mathcal{D}f^1_{x}
+\big)(v)  
+\end{align}
+\]</span></p></li>
+</ul>
+
+<img data-src="index_files/figure-revealjs/cell-2-output-1.svg" class="r-stretch"></section>
 <section id="forward-mode-implementation" class="slide level2">
 <h2>Forward mode – Implementation</h2>
 </section>
-<section id="reverse-mode-theory" class="slide level2">
+<section id="reverse-mode-theory" class="slide level2 smaller">
 <h2>Reverse mode – Theory</h2>
-<p>Reverse accumulation on a function <span class="math inline">\(f(x) = f^N(\ldots f^2(f^1(x)))\)</span>:</p>
-
-<img data-src="index_files/figure-revealjs/cell-3-output-1.svg" class="r-stretch"><p>Common names for functions <code>𝒟ᵀf</code>:</p>
 <ul>
-<li>Vector-Jacobian product (VJP)</li>
-<li>pullback</li>
-<li>reverse-rule (<code>rrule</code>)</li>
+<li><p>we can compute VJPs of <span class="math inline">\(f\)</span> by <strong>reverse-accumulating</strong> VJPs of <span class="math inline">\(f^i\)</span>: <span class="math display">\[
+% parentheses for emphasis
+\begin{align}
+w^T \cdot J_f\big|_x
+&amp;= \Big(\Big(\Big( w^T \cdot
+  J_{f^{N  }}\big|_{h_{N-1}} \Big) \cdot
+  J_{f^{N-1}}\big|_{h_{N-2}} \Big) \cdot \ldots \Big)  \cdot
+  J_{f^{1  }}\big|_x
+\end{align}
+\]</span></p></li>
+<li><p>or in terms of <strong>pullbacks</strong>: <span class="math display">\[
+\begin{align}
+\mathcal{D}^{*}f_x(w)
+= \big(
+  \mathcal{D}^{*}f^{1  }_x  \circ \ldots \circ
+  \mathcal{D}^{*}f^{N-1}_{h_{N-2}} \circ
+  \mathcal{D}^{*}f^{N  }_{h_{N-1}}
+\big) (w) \quad .
+\end{align}
+\]</span></p></li>
 </ul>
-</section>
+
+<img data-src="index_files/figure-revealjs/cell-3-output-1.svg" class="r-stretch"></section>
 <section id="reverse-mode-implementation" class="slide level2">
 <h2>Reverse mode – Implementation</h2>
 </section></section>
@@ -550,8 +637,32 @@ J_h\big|_x = J_{g}\big|_{f(x)} \cdot J_{f}\big|_{x}
 </ol>
 </div>
 </section>
-<section id="differentiationinterface" class="slide level2">
-<h2>DifferentiationInterface</h2>
+<section id="differentiationinterface.jl" class="slide level2">
+<h2>DifferentiationInterface.jl</h2>
+<p>Supported backends:</p>
+<!-- Using columns to fit everything on one slide -->
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><a href="https://github.com/JuliaDiff/ChainRulesCore.jl">ChainRulesCore.jl</a></li>
+<li><a href="https://github.com/JuliaDiff/Diffractor.jl">Diffractor.jl</a></li>
+<li><a href="https://github.com/EnzymeAD/Enzyme.jl">Enzyme.jl</a></li>
+<li><a href="https://github.com/brianguenter/FastDifferentiation.jl">FastDifferentiation.jl</a></li>
+<li><a href="https://github.com/JuliaDiff/FiniteDiff.jl">FiniteDiff.jl</a></li>
+<li><a href="https://github.com/JuliaDiff/FiniteDifferences.jl">FiniteDifferences.jl</a></li>
+<li><a href="https://github.com/JuliaDiff/ForwardDiff.jl">ForwardDiff.jl</a></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<ul>
+<li><a href="https://github.com/JuliaDiff/PolyesterForwardDiff.jl">PolyesterForwardDiff.jl</a></li>
+<li><a href="https://github.com/JuliaDiff/ReverseDiff.jl">ReverseDiff.jl</a></li>
+<li><a href="https://github.com/JuliaSymbolics/Symbolics.jl">Symbolics.jl</a></li>
+<li><a href="https://github.com/withbayes/Tapir.jl">Tapir.jl</a></li>
+<li><a href="https://github.com/FluxML/Tracker.jl">Tracker.jl</a></li>
+<li><a href="https://github.com/FluxML/Zygote.jl">Zygote.jl</a></li>
+</ul>
+</div></div>
+<p>Using <a href="https://github.com/SciML/ADTypes.jl">ADTypes.jl</a> to select backends.</p>
 </section></section>
 <section>
 <section id="enabling-ad" class="title-slide slide level1 center">
@@ -591,8 +702,8 @@ J_h\big|_x = J_{g}\big|_{f(x)} \cdot J_{f}\big|_{x}
 <li>New solutions like Tapir or FastDifferentiation enable different tradeoffs</li>
 </ul>
 </section>
-<section id="differentiationinterface-differentiationinterfacetest" class="slide level2">
-<h2>DifferentiationInterface &amp; DifferentiationInterfaceTest</h2>
+<section id="differentiationinterface.jl-differentiationinterfacetest.jl" class="slide level2">
+<h2>DifferentiationInterface.jl &amp; DifferentiationInterfaceTest.jl</h2>
 <ul>
 <li>Sometimes, a little performance loss is acceptable for a simpler API</li>
 <li>Systematic test suites catch many errors</li>

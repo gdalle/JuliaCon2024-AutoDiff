@@ -120,11 +120,11 @@
   <text x="442" y="12" >y</text>
   <text x="106" y="28" >f¹</text>
   <text x="218" y="28" >f²</text>
-  <text x="394" y="28" >fⁿ</text>
-  <text x="90" y="76" >𝒟ᵀf¹</text>
-  <text x="202" y="76" >𝒟ᵀf²</text>
-  <text x="378" y="76" >𝒟ᵀfⁿ</text>
-  <text x="2" y="108" >𝒟ᵀfₓ(w)</text>
+  <text x="394" y="28" >fᴺ</text>
+  <text x="90" y="76" >𝒟*f¹</text>
+  <text x="202" y="76" >𝒟*f²</text>
+  <text x="378" y="76" >𝒟*fᴺ</text>
+  <text x="2" y="108" >𝒟*fₓ(w)</text>
   <text x="442" y="108" >w</text>
   <g>
     <line x1="84" y1="8" x2="140" y2="8" class="solid"></line>
