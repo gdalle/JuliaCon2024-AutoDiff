@@ -10,7 +10,7 @@ author:
       - department: IdePHICS, INDY & SPOC laboratories
   - name: Adrian Hill
     orcid: 0009-0009-5977-301X
-    email: gh@adrianhill.de
+    email: hill@tu-berlin.de
     affiliation: 
       - name: TU Berlin
       - department: Machine Learning group
@@ -19,6 +19,7 @@ bibliography: AutoDiff.bib
 engine: julia
 format:
   revealjs:
+    theme: [default, custom.scss]
     toc: true
     toc-depth: 1
     slide-number: true
