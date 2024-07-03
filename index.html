@@ -498,12 +498,58 @@ Adrian Hill <a href="https://orcid.org/0009-0009-5977-301X" class="quarto-title-
 </section>
 <section id="python-vs.-julia" class="slide level2">
 <h2>Python vs.&nbsp;Julia</h2>
+
+<img data-src="img/python_julia_1.png" class="r-stretch"><aside class="notes">
 <ul>
 <li>In Python, things are simple and boring: JAX, PyTorch or TensorFlow</li>
 <li>In Julia, things are complicated and fun: <a href="https://juliadiff.org/" class="uri">https://juliadiff.org/</a></li>
 <li>A lot of folklore and hidden knowledge, hard to see straight</li>
 <li>How to choose an AD backend and make it work?</li>
 </ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="python-vs.-julia-1" class="slide level2">
+<h2>Python vs.&nbsp;Julia</h2>
+
+<img data-src="img/python_julia_2.png" class="r-stretch"><aside class="notes">
+<p>Imagine we need to use two packages: one for Foo, one for Bar</p>
+<ul>
+<li>In Python, both packages need to be rewritten for each framework
+<ul>
+<li>(-) “three language problem”</li>
+<li>(+) compatibility between packages in an ecosystem is almost guaranteed</li>
+</ul></li>
+<li>In Julia, only one Foo and Bar package need to exist
+<ul>
+<li>(+) efforts can be “centralized”</li>
+<li>(-) compatibility with backends is up to the package developers
+<ul>
+<li>must be documented</li>
+<li>hard to understand for newcomers</li>
+</ul></li>
+</ul></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section></section>
 <section>
 <section id="how-ad-works" class="title-slide slide level1 center">

@@ -60,7 +60,14 @@
     "href": "index.html#python-vs.-julia",
     "title": "Gradients for everyone",
     "section": "Python vs. Julia",
-    "text": "Python vs. Julia\n\nIn Python, things are simple and boring: JAX, PyTorch or TensorFlow\nIn Julia, things are complicated and fun: https://juliadiff.org/\nA lot of folklore and hidden knowledge, hard to see straight\nHow to choose an AD backend and make it work?"
+    "text": "Python vs. Julia\n\n\n\nIn Python, things are simple and boring: JAX, PyTorch or TensorFlow\nIn Julia, things are complicated and fun: https://juliadiff.org/\nA lot of folklore and hidden knowledge, hard to see straight\nHow to choose an AD backend and make it work?"
+  },
+  {
+    "objectID": "index.html#python-vs.-julia-1",
+    "href": "index.html#python-vs.-julia-1",
+    "title": "Gradients for everyone",
+    "section": "Python vs. Julia",
+    "text": "Python vs. Julia\n\n\nImagine we need to use two packages: one for Foo, one for Bar\n\nIn Python, both packages need to be rewritten for each framework\n\n(-) “three language problem”\n(+) compatibility between packages in an ecosystem is almost guaranteed\n\nIn Julia, only one Foo and Bar package need to exist\n\n(+) efforts can be “centralized”\n(-) compatibility with backends is up to the package developers\n\nmust be documented\nhard to understand for newcomers"
   },
   {
     "objectID": "index.html#a-multifaceted-concept",
