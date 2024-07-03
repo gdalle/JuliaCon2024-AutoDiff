@@ -53,7 +53,7 @@
     "href": "index.html#three-types-of-ad-users",
     "title": "Gradients for everyone",
     "section": "Three types of AD users",
-    "text": "Three types of AD users\n\nPackage users want to differentiate through functions\nPackage developers want to write differentiable functions\nBackend developers want to create new AD systems"
+    "text": "Three types of AD users\n\nBackend developers want to create new AD systems\nPackage developers want to write differentiable functions\nPackage users want to differentiate through functions"
   },
   {
     "objectID": "index.html#python-vs.-julia",
@@ -109,7 +109,7 @@
     "href": "index.html#forward-mode-theory",
     "title": "Gradients for everyone",
     "section": "Forward mode – Theory",
-    "text": "Forward mode – Theory\n\nAssuming a function \\(f(x) = f^N(\\ldots f^2(f^1(x)))\\) with intermediate activations \\[\n\\begin{equation}\n  h_1 = f^1(x) ,\\quad\n  h_2 = f^2(f^1(x)) ,\\quad\n  h_k = f^{k}(h_{k-1})\n\\end{equation} \\quad ,\n\\]\nwe can compute JVPs of \\(f\\) by forward-accumulating JVPs of \\(f^i\\): \\[\n% parentheses for emphasis\n\\begin{equation}\nJ_f\\big|_x \\cdot v\n= J_{f^{N  }}\\big|_{h_{N-1}} \\cdot\n  \\Big( \\ldots \\cdot\n  \\Big( J_{f^{2  }}\\big|_{h_{1  }} \\cdot\n  \\Big( J_{f^{1  }}\\big|_{x} \\cdot v \\Big)\\Big)\\Big)\n\\end{equation}\n\\]\nor in terms of pushforwards: \\[\n\\begin{equation}\n\\mathcal{D}f_x(v)\n= \\big(\n\\mathcal{D}f^{N}_{h_{N-1}} \\circ \\ldots \\circ\n  \\mathcal{D}f^2_{h_1}  \\circ\n  \\mathcal{D}f^1_{x}\n\\big)(v)  \n\\end{equation}\n\\]"
+    "text": "Forward mode – Theory\n\nAssuming a function \\(f(x) = f^N(\\ldots f^2(f^1(x)))\\) with intermediate activations \\[\nh_1 = f^1(x) \\,,\\quad\nh_2 = f^2(f^1(x)) \\,,\\quad\nh_k = f^{k}(h_{k-1}) \\,,\n\\]\nwe can compute JVPs of \\(f\\) by forward-accumulating JVPs of \\(f^i\\): \\[\n% parentheses for emphasis\nJ_f\\big|_x \\cdot v\n= J_{f^{N  }}\\big|_{h_{N-1}} \\cdot\n  \\Big( \\ldots \\cdot\n  \\Big( J_{f^{2  }}\\big|_{h_{1  }} \\cdot\n  \\Big( J_{f^{1  }}\\big|_{x} \\cdot v \\Big)\\Big)\n\\Big)\n\\]\nor in terms of pushforwards: \\[\n\\mathcal{D}f_x(v)\n= \\big(\n  \\mathcal{D}f^{N}_{h_{N-1}} \\circ \\ldots \\circ\n  \\mathcal{D}f^2_{h_1}  \\circ\n  \\mathcal{D}f^1_{x}\n\\big)(v)  \n\\]"
   },
   {
     "objectID": "index.html#forward-mode-implementation",
@@ -123,7 +123,7 @@
     "href": "index.html#reverse-mode-theory",
     "title": "Gradients for everyone",
     "section": "Reverse mode – Theory",
-    "text": "Reverse mode – Theory\n\nwe can compute VJPs of \\(f\\) by reverse-accumulating VJPs of \\(f^i\\): \\[\n% parentheses for emphasis\n\\begin{equation}\nw^T \\cdot J_f\\big|_x\n= \\Big(\\Big(\\Big( w^T \\cdot\n  J_{f^{N  }}\\big|_{h_{N-1}} \\Big) \\cdot\n  J_{f^{N-1}}\\big|_{h_{N-2}} \\Big) \\cdot \\ldots \\Big)  \\cdot\n  J_{f^{1  }}\\big|_x\n\\end{equation}\n\\]\nor in terms of pullbacks: \\[\n\\begin{equation}\n\\mathcal{D}^{*}f_x(w)\n= \\big(\n  \\mathcal{D}^{*}f^{1  }_x  \\circ \\ldots \\circ\n  \\mathcal{D}^{*}f^{N-1}_{h_{N-2}} \\circ\n  \\mathcal{D}^{*}f^{N  }_{h_{N-1}}\n\\big) (w) \\quad .\n\\end{equation}\n\\]"
+    "text": "Reverse mode – Theory\n\nwe can compute VJPs of \\(f\\) by reverse-accumulating VJPs of \\(f^i\\): \\[\n% parentheses for emphasis\nw^T \\cdot J_f\\big|_x\n= \\Big(\\Big(\\Big( w^T \\cdot\n  J_{f^{N  }}\\big|_{h_{N-1}} \\Big) \\cdot\n  J_{f^{N-1}}\\big|_{h_{N-2}} \\Big) \\cdot \\ldots \\Big)  \\cdot\n  J_{f^{1  }}\\big|_x\n\\]\nor in terms of pullbacks: \\[\n\\mathcal{D}^{*}f_x(w)\n= \\big(\n  \\mathcal{D}^{*}f^{1  }_x  \\circ \\ldots \\circ\n  \\mathcal{D}^{*}f^{N-1}_{h_{N-2}} \\circ\n  \\mathcal{D}^{*}f^{N  }_{h_{N-1}}\n\\big) (w)\n\\]"
   },
   {
     "objectID": "index.html#reverse-mode-implementation",
@@ -137,7 +137,7 @@
     "href": "index.html#why-so-many-backends",
     "title": "Gradients for everyone",
     "section": "Why so many backends?",
-    "text": "Why so many backends?\n\nConflicting paradigms:\n\nnumeric vs. symbolic vs. algorithmic\nsource-to-source vs. operator overloading\nJulia level vs. LLVM level\n\nCover varying subsets of the language\nHistorical reasons: developed by different people"
+    "text": "Why so many backends?\n\nConflicting paradigms:\n\nnumeric vs. symbolic vs. algorithmic\nsource-to-source vs. operator overloading\nJulia AST vs. Julia IR vs. LLVM level\n\nCover varying subsets of the language\nHistorical reasons: developed by different people"
   },
   {
     "objectID": "index.html#useful-criteria",
