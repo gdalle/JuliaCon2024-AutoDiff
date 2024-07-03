@@ -28,6 +28,13 @@
     "text": "https://adrianhill.de/julia-ml-course/L6_Automatic_Differentiation/\nhttps://jax.readthedocs.io/en/latest/notebooks/autodiff_cookbook.html"
   },
   {
+    "objectID": "index.html#follow-along",
+    "href": "index.html#follow-along",
+    "title": "Gradients for everyone",
+    "section": "Follow along",
+    "text": "Follow along\n\nSlides available on GitHub:\n\ngithub.com/gdalle/JuliaCon2024-AutoDiff"
+  },
+  {
     "objectID": "index.html#motivation",
     "href": "index.html#motivation",
     "title": "Gradients for everyone",
