@@ -27,6 +27,7 @@ format:
     code-line-numbers: false
 execute:
     echo: true
+    freeze: auto
 ---
 
 
@@ -58,10 +59,32 @@ Slides available on GitHub:
 
 ## Python vs. Julia
 
+![](img/python_julia_1.png)
+
+::: {.notes}
 - In Python, things are simple and boring: JAX, PyTorch or TensorFlow
 - In Julia, things are complicated and fun: <https://juliadiff.org/>
 - A lot of folklore and hidden knowledge, hard to see straight
 - How to choose an AD backend and make it work?
+:::
+
+## Python vs. Julia
+
+![](img/python_julia_2.png)
+
+
+::: {.notes}
+Imagine we need to use two packages: one for Foo, one for Bar
+
+- In Python, both packages need to be rewritten for each framework
+  - (-) "three language problem"
+  - (+) compatibility between packages in an ecosystem is almost guaranteed
+- In Julia, only one Foo and Bar package need to exist
+  - (+) efforts can be "centralized"
+  - (-) compatibility with backends is up to the package developers
+    - must be documented
+    - hard to understand for newcomers
+:::
 
 # How AD works
 

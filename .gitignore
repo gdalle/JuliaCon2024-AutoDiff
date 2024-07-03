@@ -1,4 +1,5 @@
 _site
+_freeze
 **_files
 *.html
 *.ipynb
