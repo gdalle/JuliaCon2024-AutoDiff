@@ -143,35 +143,35 @@ See @blondelElementsDifferentiableProgramming2024 for a deep dive:
 ## Forward mode -- Theory {.smaller}
 * Assuming a function $f(x) = f^N(\ldots f^2(f^1(x)))$ with intermediate activations
   $$
-  \begin{align}
+  \begin{equation}
     h_1 = f^1(x) ,\quad 
     h_2 = f^2(f^1(x)) ,\quad
     h_k = f^{k}(h_{k-1})
-  \end{align} \quad ,
+  \end{equation} \quad ,
   $$
 
   we can compute JVPs of $f$ by **forward-accumulating** JVPs of $f^i$: 
   $$
   % parentheses for emphasis
-  \begin{align}
+  \begin{equation}
   J_f\big|_x \cdot v
-  = 	J_{f^{N  }}\big|_{h_{N-1}} \cdot
+  = J_{f^{N  }}\big|_{h_{N-1}} \cdot
     \Big( \ldots \cdot
     \Big( J_{f^{2  }}\big|_{h_{1  }} \cdot
     \Big( J_{f^{1  }}\big|_{x} \cdot v \Big)\Big)\Big)
-  \end{align}
+  \end{equation}
   $$
 
 * or in terms of **pushforwards**:
   $$
-  \begin{align}
+  \begin{equation}
   \mathcal{D}f_x(v)
   = \big(
   \mathcal{D}f^{N}_{h_{N-1}} \circ \ldots \circ
 	\mathcal{D}f^2_{h_1}  \circ
 	\mathcal{D}f^1_{x}
   \big)(v)  
-  \end{align}
+  \end{equation}
   $$
   
 ```{julia}
@@ -194,25 +194,25 @@ svgbob"""
 * we can compute VJPs of $f$ by **reverse-accumulating** VJPs of $f^i$: 
   $$
   % parentheses for emphasis
-  \begin{align}
+  \begin{equation}
   w^T \cdot J_f\big|_x
-  &= \Big(\Big(\Big( w^T \cdot
+  = \Big(\Big(\Big( w^T \cdot
     J_{f^{N  }}\big|_{h_{N-1}} \Big) \cdot
     J_{f^{N-1}}\big|_{h_{N-2}} \Big) \cdot \ldots \Big)  \cdot
     J_{f^{1  }}\big|_x
-  \end{align}
+  \end{equation}
   $$
 
 * or in terms of **pullbacks**:
   $$
-  \begin{align}
+  \begin{equation}
   \mathcal{D}^{*}f_x(w)
   = \big(
     \mathcal{D}^{*}f^{1  }_x  \circ \ldots \circ
     \mathcal{D}^{*}f^{N-1}_{h_{N-2}} \circ
     \mathcal{D}^{*}f^{N  }_{h_{N-1}} 
   \big) (w) \quad .
-  \end{align}
+  \end{equation}
   $$
 
 ```{julia}
@@ -274,9 +274,9 @@ Reverse mode
 
 ::::
 
-## DifferentiationInterface.jl
+# DifferentiationInterface.jl
 
-Supported backends:
+## Supported backends
 
 <!-- Using columns to fit everything on one slide -->
 :::: {.columns}
@@ -304,6 +304,33 @@ Supported backends:
 
 Using [ADTypes.jl](https://github.com/SciML/ADTypes.jl) to select backends.
 
+## Getting started with DI
+
+1. `import` desired backends
+```{julia}
+#| output: false
+using DifferentiationInterface
+import ForwardDiff, Enzyme, Zygote
+
+f(x) = sum(abs2, x)
+x = [1.0, 2.0, 3.0, 4.0]
+```
+
+2. Call [DI's operators](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/operators/) using [ADTypes](https://github.com/SciML/ADTypes.jl)
+```{julia}
+value_and_gradient(f, AutoForwardDiff(), x)
+```
+
+```{julia}
+value_and_gradient(f, AutoEnzyme(), x)
+```
+
+```{julia}
+value_and_gradient(f, AutoZygote(), x)
+```
+
+3. Increase performance via [DI's preparation mechanism](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial1/)
+
 # Enabling AD
 
 ## Typical failures
@@ -318,7 +345,7 @@ Using [ADTypes.jl](https://github.com/SciML/ADTypes.jl) to select backends.
 
 ## Enzyme: type-stability
 
-## DifferentiationInterfaceTest
+## DifferentiationInterfaceTest.jl
 
 # Developing AD
 
