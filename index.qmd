@@ -57,21 +57,9 @@ Slides available on GitHub:
 2. **Package developers** want to write differentiable functions
 3. **Package users** want to differentiate through functions
 
-## Python vs. Julia
+## Python vs. Julia: users
 
-![](img/python_julia_1.png)
-
-::: {.notes}
-- In Python, things are simple and boring: JAX, PyTorch or TensorFlow
-- In Julia, things are complicated and fun: <https://juliadiff.org/>
-- A lot of folklore and hidden knowledge, hard to see straight
-- How to choose an AD backend and make it work?
-:::
-
-## Python vs. Julia
-
-![](img/python_julia_2.png)
-
+![](img/python_julia_user.png)
 
 ::: {.notes}
 Imagine we need to use two packages: one for Foo, one for Bar
@@ -84,6 +72,17 @@ Imagine we need to use two packages: one for Foo, one for Bar
   - (-) compatibility with backends is up to the package developers
     - must be documented
     - hard to understand for newcomers
+:::
+
+## Python vs. Julia: developers
+
+![](img/python_julia_dev.png)
+
+::: {.notes}
+- In Python, things are simple and boring: JAX, PyTorch or TensorFlow
+- In Julia, things are complicated and fun: <https://juliadiff.org/>
+- A lot of folklore and hidden knowledge, hard to see straight
+- How to choose an AD backend and make it work?
 :::
 
 # How AD works
@@ -320,7 +319,7 @@ Using [ADTypes.jl](https://github.com/SciML/ADTypes.jl) to select backends.
 
 ## Getting started with DI
 
-1. `import` desired backends
+**Step 1:** `import` desired backends
 ```{julia}
 #| output: false
 using DifferentiationInterface
@@ -330,7 +329,7 @@ f(x) = sum(abs2, x)
 x = [1.0, 2.0, 3.0, 4.0]
 ```
 
-2. Call [DI's operators](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/operators/) using [ADTypes](https://github.com/SciML/ADTypes.jl)
+**Step 2:** Call [DI's operators](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/operators/) using [ADTypes](https://github.com/SciML/ADTypes.jl)
 ```{julia}
 value_and_gradient(f, AutoForwardDiff(), x)
 ```
@@ -343,7 +342,7 @@ value_and_gradient(f, AutoEnzyme(), x)
 value_and_gradient(f, AutoZygote(), x)
 ```
 
-3. Increase performance via [DI's preparation mechanism](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial1/)
+**Step 3:** Increase performance via [DI's preparation mechanism](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial1/)
 
 # Enabling AD
 
