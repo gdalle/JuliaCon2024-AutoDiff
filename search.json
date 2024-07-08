@@ -32,7 +32,7 @@
     "href": "index.html#follow-along",
     "title": "Gradients for everyone",
     "section": "Follow along",
-    "text": "Follow along\n\n\nSlides on GitHub:\ngithub.com/gdalle/JuliaCon2024-AutoDiff"
+    "text": "Follow along\n\n\ngithub.com/gdalle/JuliaCon2024-AutoDiff"
   },
   {
     "objectID": "index.html#motivation",
@@ -74,7 +74,7 @@
     "href": "index.html#various-flavors-of-differentiation",
     "title": "Gradients for everyone",
     "section": "Various flavors of differentiation",
-    "text": "Various flavors of differentiation\n\nManual (aka blood, sweat and tears): work out \\(f'\\) by hand\nNumeric (aka finite differences): \\(f'(x) \\approx \\frac{f(x+\\varepsilon) - f(x)}{\\varepsilon}\\)\nSymbolic (aka computer algebra): code a formula for \\(f\\), get a formula for \\(f'\\)\nAlgorithmic (aka autodiff): code a program for \\(f\\), get a value for \\(f'(x)\\)"
+    "text": "Various flavors of differentiation\n\nManual: work out \\(f'\\) by hand\nNumeric: \\(f'(x) \\approx \\frac{f(x+\\varepsilon) - f(x)}{\\varepsilon}\\)\nSymbolic: code a formula for \\(f\\), get a formula for \\(f'\\)\nAlgorithmic: code a program for \\(f\\), get a value for \\(f'(x)\\)\n\n\n\nManual aka blood, sweat and tears\nNumeric aka finite differences\nSymbolic aka computer algebra\nAlgorithmic aka autodiff"
   },
   {
     "objectID": "index.html#algorithmic-differentiation",
@@ -95,7 +95,7 @@
     "href": "index.html#reverse-mode",
     "title": "Gradients for everyone",
     "section": "Reverse mode",
-    "text": "Reverse mode\nNatural decomposition of Vector-Jacobian Products (JVPs), aka pullbacks or reverse rules: \\[\nv^\\top J v = (((v^\\top J_L) J_{L-1}) \\dots J_2)J_1\n\\]\nFor \\(f: \\mathbb{R}^n \\rightarrow \\mathbb{R}^m\\), the \\(m \\times n\\) Jacobian requires \\(m\\) VJPs: one per input dimension.\n\n\n\n\n\n\nSpecial case\n\n\nThe gradient of \\(f : \\mathbb{R}^n \\rightarrow \\mathbb{R}\\) requires just one JVP."
+    "text": "Reverse mode\nNatural decomposition of Vector-Jacobian Products (JVPs), aka pullbacks or reverse rules: \\[\nv^\\top J = (((v^\\top J_L) J_{L-1}) \\dots J_2)J_1\n\\]\nFor \\(f: \\mathbb{R}^n \\rightarrow \\mathbb{R}^m\\), the \\(m \\times n\\) Jacobian requires \\(m\\) VJPs: one per input dimension.\n\n\n\n\n\n\nSpecial case\n\n\nThe gradient of \\(f : \\mathbb{R}^n \\rightarrow \\mathbb{R}\\) requires just one JVP."
   },
   {
     "objectID": "index.html#implementation-details",
@@ -186,7 +186,7 @@
     "href": "index.html#sparse-ad-ecosystem",
     "title": "Gradients for everyone",
     "section": "Sparse AD ecosystem",
-    "text": "Sparse AD ecosystem\n\nSparseConnectivityTracer for sparsity pattern detection\nSparseMatrixColorings for matrix coloring\nDI for sparse Jacobians and Hessians (see tutorial)\n\n\nSparse autodiff with coloring (Gebremedhin, Manne, and Pothen 2005)"
+    "text": "Sparse AD ecosystem\n\nSparseConnectivityTracer for sparsity pattern detection\nSparseMatrixColorings for matrix coloring\nDI for sparse Jacobians and Hessians (see tutorial)\n\n\nSparse AD with coloring (Gebremedhin, Manne, and Pothen 2005)"
   },
   {
     "objectID": "index.html#whats-next",

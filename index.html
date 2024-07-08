@@ -8,7 +8,7 @@
 <link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.5.53">
+  <meta name="generator" content="quarto-1.5.54">
 
   <meta name="author" content="Guillaume Dalle">
   <meta name="author" content="Adrian Hill">
@@ -463,15 +463,10 @@ Adrian Hill <a href="https://orcid.org/0009-0009-5977-301X" class="quarto-title-
 </section>
 <section id="follow-along" class="slide level2">
 <h2>Follow along</h2>
-<div class="columns">
-<div class="column" style="width:45%;">
-<p>Slides on GitHub:</p>
+<div class="qr-code">
+<p><img data-src="img/qr/qrcode.png"></p>
 <p><a href="https://github.com/gdalle/JuliaCon2024-AutoDiff">github.com/gdalle/JuliaCon2024-AutoDiff</a></p>
-</div><div class="column" style="width:10%;">
-
-</div><div class="column" style="width:45%;">
-<p><img data-src="img/qr/qrcode.png" style="width:100.0%"></p>
-</div></div>
+</div>
 </section>
 <section>
 <section id="introduction" class="title-slide slide level1 center">
@@ -598,11 +593,29 @@ Adrian Hill <a href="https://orcid.org/0009-0009-5977-301X" class="quarto-title-
 <section id="various-flavors-of-differentiation" class="slide level2">
 <h2>Various flavors of differentiation</h2>
 <ul>
-<li><strong>Manual</strong> (aka blood, sweat and tears): work out <span class="math inline">\(f'\)</span> by hand</li>
-<li><strong>Numeric</strong> (aka finite differences): <span class="math inline">\(f'(x) \approx \frac{f(x+\varepsilon) - f(x)}{\varepsilon}\)</span></li>
-<li><strong>Symbolic</strong> (aka computer algebra): code a formula for <span class="math inline">\(f\)</span>, get a formula for <span class="math inline">\(f'\)</span></li>
-<li><strong>Algorithmic</strong> (aka autodiff): code a program for <span class="math inline">\(f\)</span>, get a value for <span class="math inline">\(f'(x)\)</span></li>
+<li><strong>Manual</strong>: work out <span class="math inline">\(f'\)</span> by hand</li>
+<li><strong>Numeric</strong>: <span class="math inline">\(f'(x) \approx \frac{f(x+\varepsilon) - f(x)}{\varepsilon}\)</span></li>
+<li><strong>Symbolic</strong>: code a formula for <span class="math inline">\(f\)</span>, get a formula for <span class="math inline">\(f'\)</span></li>
+<li><strong>Algorithmic</strong>: code a program for <span class="math inline">\(f\)</span>, get a value for <span class="math inline">\(f'(x)\)</span></li>
 </ul>
+<aside class="notes">
+<ul>
+<li>Manual aka blood, sweat and tears</li>
+<li>Numeric aka finite differences</li>
+<li>Symbolic aka computer algebra</li>
+<li>Algorithmic aka autodiff</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="algorithmic-differentiation" class="slide level2">
 <h2>Algorithmic differentiation</h2>
@@ -638,7 +651,7 @@ J v = J_L (J_{L-1}(\dots J_2(J_1 v)))
 <section id="reverse-mode" class="slide level2">
 <h2>Reverse mode</h2>
 <p>Natural decomposition of <strong>Vector-Jacobian Products</strong> (JVPs), aka pullbacks or reverse rules: <span class="math display">\[
-v^\top J v = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
+v^\top J = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
 \]</span></p>
 <p>For <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span>, the <span class="math inline">\(m \times n\)</span> Jacobian requires <span class="math inline">\(m\)</span> VJPs: one per input dimension.</p>
 <div class="callout callout-note callout-titled callout-style-default">
@@ -872,7 +885,7 @@ v^\top J v = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
 <li>DI for sparse Jacobians and Hessians (see <a href="https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial2/">tutorial</a>)</li>
 </ul>
 
-<img data-src="img/coloring.png" class="r-stretch quarto-figure-center"><p class="caption">Sparse autodiff with coloring <span class="citation" data-cites="gebremedhinWhatColorYour2005">(<a href="#/references" role="doc-biblioref" onclick="">Gebremedhin, Manne, and Pothen 2005</a>)</span></p></section>
+<img data-src="img/coloring.png" class="r-stretch quarto-figure-center"><p class="caption">Sparse AD with coloring <span class="citation" data-cites="gebremedhinWhatColorYour2005">(<a href="#/references" role="doc-biblioref" onclick="">Gebremedhin, Manne, and Pothen 2005</a>)</span></p></section>
 <section id="whats-next" class="slide level2">
 <h2>What’s next?</h2>
 <p>DI and its sparse AD ecosystem are brand new projects:</p>
