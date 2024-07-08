@@ -30,32 +30,59 @@ execute:
     freeze: auto
 ---
 
-
 ## Follow along
-<!-- Ideally, we figure out how to put this on the title slide -->
-Slides available on GitHub: 
 
-![](img/qr/qrcode.png)
+
+:::: {.columns}
+
+::: {.column width="45%"}
+Slides on GitHub: 
 
 [github.com/gdalle/JuliaCon2024-AutoDiff](https://github.com/gdalle/JuliaCon2024-AutoDiff)
+:::
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="45%"}
+![](img/qr/qrcode.png){width="100%"}
+:::
+
+::::
 
 # Introduction
 
 ## Motivation
 
-- What is a derivative?
-- Why do we care?
+::: {.callout-note}
+## What is a derivative?
+
+A linear approximation of a function around a point.
+:::
+
+::: {.callout-important}
+## Why do we care?
+
+Derivatives are essential in optimization and machine learning.
+:::
+
+::: {.callout-tip}
+## What do I need to do?
+
+Not much: with Automatic Differentiation (AD), derivatives are very easy to compute!
+:::
 
 ## Differentiable programming
 
-- A function is not just math
-- Blocks of code are functions too
+> Differentiable programming is a programming paradigm in which **complex computer programs** (including those with control flows and data structures) can be **differentiated end-to-end automatically**, enabling gradient-based optimization of parameters in the program. In differentiable programming, a program is also defined as the composition of elementary operations, forming a **computation graph**.
+
+From the book by @blondelElementsDifferentiableProgramming2024
 
 ## Three types of AD users
 
-1. **Backend developers** want to create new AD systems
+1. **Package users** want to differentiate through functions
 2. **Package developers** want to write differentiable functions
-3. **Package users** want to differentiate through functions
+3. **Backend developers** want to create new AD systems
 
 ## Python vs. Julia: users
 
@@ -87,162 +114,85 @@ Imagine we need to use two packages: one for Foo, one for Bar
 
 # How AD works
 
-## A multifaceted concept
+## Various flavors of differentiation
 
-See @blondelElementsDifferentiableProgramming2024 for a deep dive:
+- **Manual** (aka blood, sweat and tears): work out $f'$ by hand
+- **Numeric** (aka finite differences): $f'(x) \approx \frac{f(x+\varepsilon) - f(x)}{\varepsilon}$
+- **Symbolic** (aka computer algebra): code a formula for $f$, get a formula for $f'$
+- **Algorithmic** (aka autodiff): code a program for $f$, get a value for $f'(x)$
 
-## Numeric differentiation
+## Algorithmic differentiation 
 
-## Symbolic differentiation
+Three key ideas:
 
-## Algorithmic differentiation  {.smaller}
-* Let's look at a function $h(x)=g(f(x))$ composed from two differentiable functions $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$ and $g: \mathbb{R}^m \rightarrow \mathbb{R}^p$
-  $$
-  h = g \circ f \quad .
-  $$
+1. Program = composition chain (or DAG) of many functions
+2. Jacobian of $f = f_L \circ \dots \circ f_2 \circ f_1$ given by the chain rule:
+$$
+J = J_L J_{L-1} \dots J_2 J_1
+$$
+1. Avoid materializing full Jacobians with matrix-vector products
 
-* The Jacobian of $h$ can be obtained from the Jacobians of $g$ and $f$ using the **chain rule**:
+## Forward mode
 
-  $$
-  J_h\big|_x = J_{g}\big|_{f(x)} \cdot J_{f}\big|_{x}
-  $$
+Natural decomposition of **Jacobian-Vector Products** (JVPs), aka pushforwards or forward rules:
+$$
+J v = J_L (J_{L-1}(\dots J_2(J_1 v)))
+$$
 
-* For functions with "deeper" compositional structure, we need to compute the products of many Jacobians.
-  * If implemented naively, full Jacobians require a lot of memory
-  * **Instead, let's do this matrix-free using JVPs and VJPs!**
+For $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$, the $m \times n$ Jacobian requires $n$ JVPs: one per input dimension.
 
-## Jacobian-vector products {.smaller}
+::: {.callout-note}
+## Special case
 
-* Also called **JVPs**, **pushforwards** or **forward rules**
-* Multiplying Jacobian with $i$-th column basis vector $e_i$ computes $i$-th column of Jacobian 
-  $$
-  \begin{equation}
-  J_f\big|_x \cdot e_i
-  = \begin{bmatrix}
-      \dfrac{\partial f_1}{\partial x_1}\Bigg|_x & \cdots &
-    \dfrac{\partial f_1}{\partial x_n}\Bigg|_x\\
-      \vdots                             & \ddots & \vdots\\
-      \dfrac{\partial f_m}{\partial x_1}\Bigg|_x & \cdots &
-    \dfrac{\partial f_m}{\partial x_n}\Bigg|_x
-  \end{bmatrix} \cdot e_i
-  = \begin{bmatrix}
-      \dfrac{\partial f_1}{\partial x_i}\Bigg|_x \\
-      \vdots \\
-      \dfrac{\partial f_m}{\partial x_i}\Bigg|_x \\
-  \end{bmatrix}
-  =: \mathcal{D}f_x(e_i)
-  \end{equation}
-  $$
+The derivative of $f : \mathbb{R} \rightarrow \mathbb{R}^m$ requires just one JVP.
+:::
 
-* For $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$, computing the full $m \times n$ Jacobian requires computing $n\,$ JVPs:  
-  one for each column, as many as the **input dimensionality** of $f$.
+## Reverse mode
 
-## Vector-Jacobian products {.smaller}
+Natural decomposition of **Vector-Jacobian Products** (JVPs), aka pullbacks or reverse rules:
+$$
+v^\top J v = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
+$$
 
-* Also called **VJPs**, **pullbacks** or **reverse rules**
-* Multiplying $i$-th row basis vector $e_i^T$ with Jacobian computes $i$-th row of Jacobian 
-  $$
-  \begin{align}
-  e_i^T \cdot J_f\big|_x
-  &= e_i^T \cdot \begin{bmatrix}
-      \dfrac{\partial f_1}{\partial x_1}\Bigg|_x & \cdots &
-    \dfrac{\partial f_1}{\partial x_n}\Bigg|_x\\
-      \vdots                             & \ddots & \vdots\\
-      \dfrac{\partial f_m}{\partial x_1}\Bigg|_x & \cdots &
-    \dfrac{\partial f_m}{\partial x_n}\Bigg|_x
-  \end{bmatrix} \\[0.5em]
-  &= \hspace{1.35em}\begin{bmatrix}
-      \dfrac{\partial f_i}{\partial x_1}\Bigg|_x & \cdots &
-    \dfrac{\partial f_i}{\partial x_n}\Bigg|_x
-  \end{bmatrix}
-  =: \mathcal{D}^{*}f_x(e_i)
-  \end{align}
-  $$
+For $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$, the $m \times n$ Jacobian requires $m$ VJPs: one per input dimension.
 
-* Computing the full $m \times n$ Jacobian requires computing $m\,$ VJPs: 
-  one for each row, as many as the **output dimensionality** of $f$.
+::: {.callout-note}
+## Special case
 
-## Forward mode -- Theory {.smaller}
-* Assuming a function $f(x) = f^N(\ldots f^2(f^1(x)))$ with intermediate activations
-  $$
-  h_1 = f^1(x) \,,\quad 
-  h_2 = f^2(f^1(x)) \,,\quad
-  h_k = f^{k}(h_{k-1}) \,,
-  $$
+The gradient of $f : \mathbb{R}^n \rightarrow \mathbb{R}$ requires just one JVP.
+:::
 
-  we can compute JVPs of $f$ by **forward-accumulating** JVPs of $f^i$: 
-  $$
-  % parentheses for emphasis
-  J_f\big|_x \cdot v
-  = J_{f^{N  }}\big|_{h_{N-1}} \cdot
-    \Big( \ldots \cdot
-    \Big( J_{f^{2  }}\big|_{h_{1  }} \cdot
-    \Big( J_{f^{1  }}\big|_{x} \cdot v \Big)\Big)
-  \Big)
-  $$
+## Implementation details
 
-* or in terms of **pushforwards**:
-  $$
-  \mathcal{D}f_x(v)
-  = \big(
-    \mathcal{D}f^{N}_{h_{N-1}} \circ \ldots \circ
-    \mathcal{D}f^2_{h_1}  \circ
-    \mathcal{D}f^1_{x}
-  \big)(v)  
-  $$
-  
-```{julia}
-#| echo: false
-using Kroki # maybe svgbob can be used directly inside revealjs?
-svgbob"""
- "x"  ┌─────┐ "h₁" ┌─────┐"h₂"    "hₙ₋₁"┌─────┐  "y"
-──┬──►│ "f¹"├──┬──►│ "f²"├───► .. ──┬──►│ "fᴺ"├───────►
-  │   └─────┘  │   └─────┘          │   └─────┘
-  │   ┌─────┐  │   ┌─────┐          │   ┌─────┐
-  └──►│"𝒟f¹"│  └──►│"𝒟f²"│          └──►│"𝒟fᴺ"│
-─────►│     ├─────►│     ├───► .. ─────►│     ├───────►
- "v"  └─────┘      └─────┘              └─────┘"𝒟fₓ(v)"
-"""
-```
+:::: {.columns}
 
-## Forward mode -- Implementation
+::: {.column width="45%"}
+### Forward mode
 
-## Reverse mode -- Theory {.smaller}
-* we can compute VJPs of $f$ by **reverse-accumulating** VJPs of $f^i$: 
-  $$
-  % parentheses for emphasis
-  w^T \cdot J_f\big|_x
-  = \Big(\Big(\Big( w^T \cdot
-    J_{f^{N  }}\big|_{h_{N-1}} \Big) \cdot
-    J_{f^{N-1}}\big|_{h_{N-2}} \Big) \cdot \ldots \Big)  \cdot
-    J_{f^{1  }}\big|_x
-  $$
+Forward sweep only.
 
-* or in terms of **pullbacks**:
-  $$
-  \mathcal{D}^{*}f_x(w)
-  = \big(
-    \mathcal{D}^{*}f^{1  }_x  \circ \ldots \circ
-    \mathcal{D}^{*}f^{N-1}_{h_{N-2}} \circ
-    \mathcal{D}^{*}f^{N  }_{h_{N-1}} 
-  \big) (w)
-  $$
+Based on dual numbers.
 
-```{julia}
-#| echo: false
-using Kroki # maybe svgbob can be used directly inside revealjs?
-svgbob"""
-    "x"   ┌──────┐ "h₁" ┌──────┐"h₂"    "hₙ₋₁"┌──────┐ "y"
-──────┬──►│  "f¹"├──┬──►│  "f²"├───► .. ──┬──►│  "fᴺ"├───►
-      │   └──────┘  │   └──────┘          │   └──────┘
-      │   ┌──────┐  │   ┌──────┐          │   ┌──────┐
-      └──►│"𝒟*f¹"│  └──►│"𝒟*f²"│          └──►│"𝒟*fᴺ"│
-◄─────────┤      │◄─────┤      │◄─── .. ◄─────┤      │◄───
-"𝒟*fₓ(w)" └──────┘      └──────┘              └──────┘ "w"
-"""
-```
+Low memory cost.
 
-## Reverse mode -- Implementation
+![](img/forward.png){width="100%"}
+:::
+
+::: {.column width="55%"}
+### Reverse mode
+
+Forward sweep + reverse sweep.
+
+Based on tapes.
+
+High memory cost.
+
+![](img/reverse.png){width="100%"}
+:::
+
+::::
+
+Images from @blondelElementsDifferentiableProgramming2024
 
 # Using AD
 
@@ -250,99 +200,24 @@ svgbob"""
 
 - Conflicting paradigms:
   - numeric vs. symbolic vs. algorithmic
-  - source-to-source vs. operator overloading
-  - Julia AST vs. Julia IR vs. LLVM level
+  - operator overloading vs.  source-to-source (which source?)
 - Cover varying subsets of the language
 - Historical reasons: developed by different people
 
-## Useful criteria
+## Meaningful criteria
 
-- Does this backend execute without error?
+- Does this AD backend execute without error?
 - Does it return the right derivative?
 - Does it run fast enough for me?
 
 ## A simple decision tree
 
-1. Follow recommendations of high-level library (e.g. Flux.jl)
-2. Otherwise, choose between forward and reverse mode based on input and output dimensions
-3. Try out the most battle-tested backends:
-
-:::: {.columns}
-
-::: {.column width="50%"}
-Forward mode
-
-- ForwardDiff
-- Enzyme
-:::
-
-::: {.column width="50%"}
-Reverse mode
-
-- Zygote
-- Enzyme
-:::
-
+1. Follow recommendations of high-level library (e.g. Flux)
+2. Choose mode based on input and output dimensions
+3. Try the most battle-tested backends:
+  - in forward mode: [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) or [Enzyme](https://github.com/EnzymeAD/Enzyme.jl)
+  - in reverse mode: [Zygote](https://github.com/FluxML/Zygote.jl) or [Enzyme](https://github.com/EnzymeAD/Enzyme.jl)
 4. If nothing works, fall back on finite differences
-
-::::
-
-# DifferentiationInterface.jl
-
-## Supported backends
-
-<!-- Using columns to fit everything on one slide -->
-:::: {.columns}
-
-::: {.column width="50%"}
-* [ChainRulesCore.jl](https://github.com/JuliaDiff/ChainRulesCore.jl)
-* [Diffractor.jl](https://github.com/JuliaDiff/Diffractor.jl)
-* [Enzyme.jl](https://github.com/EnzymeAD/Enzyme.jl)
-* [FastDifferentiation.jl](https://github.com/brianguenter/FastDifferentiation.jl)
-* [FiniteDiff.jl](https://github.com/JuliaDiff/FiniteDiff.jl)
-* [FiniteDifferences.jl](https://github.com/JuliaDiff/FiniteDifferences.jl)
-* [ForwardDiff.jl](https://github.com/JuliaDiff/ForwardDiff.jl)
-:::
-
-::: {.column width="50%"}
-* [PolyesterForwardDiff.jl](https://github.com/JuliaDiff/PolyesterForwardDiff.jl)
-* [ReverseDiff.jl](https://github.com/JuliaDiff/ReverseDiff.jl)
-* [Symbolics.jl](https://github.com/JuliaSymbolics/Symbolics.jl)
-* [Tapir.jl](https://github.com/withbayes/Tapir.jl)
-* [Tracker.jl](https://github.com/FluxML/Tracker.jl)
-* [Zygote.jl](https://github.com/FluxML/Zygote.jl)
-:::
-
-::::
-
-Using [ADTypes.jl](https://github.com/SciML/ADTypes.jl) to select backends.
-
-## Getting started with DI
-
-**Step 1:** `import` desired backends
-```{julia}
-#| output: false
-using DifferentiationInterface
-import ForwardDiff, Enzyme, Zygote
-
-f(x) = sum(abs2, x)
-x = [1.0, 2.0, 3.0, 4.0]
-```
-
-**Step 2:** Call [DI's operators](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/operators/) using [ADTypes](https://github.com/SciML/ADTypes.jl)
-```{julia}
-value_and_gradient(f, AutoForwardDiff(), x)
-```
-
-```{julia}
-value_and_gradient(f, AutoEnzyme(), x)
-```
-
-```{julia}
-value_and_gradient(f, AutoZygote(), x)
-```
-
-**Step 3:** Increase performance via [DI's preparation mechanism](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial1/)
 
 # Enabling AD
 
@@ -354,24 +229,141 @@ value_and_gradient(f, AutoZygote(), x)
 
 ## ForwardDiff: type-genericity
 
+ForwardDiff propagates numbers of [type `Dual`](https://juliadiff.org/ForwardDiff.jl/stable/dev/how_it_works/).
+
+| replace this | with that |
+|---|---|
+| `f(x::Vector{Float64})` | `f(x::Vector{<:Real})` |
+| `zeros(n)` | `zeros(eltype(x), n)` |
+
 ## Zygote: custom rules
 
-## Enzyme: type-stability
+If Zygote fails or is too slow, define a [custom rule](https://juliadiff.org/ChainRulesCore.jl/stable/) with [ChainRulesCore](https://github.com/JuliaDiff/ChainRulesCore.jl):
 
-## DifferentiationInterfaceTest.jl
+```julia
+using ChainRulesCore
 
-# Developing AD
+function ChainRulesCore.rrule(::typeof{myfunc}, x)
+    y = myfunc(x)
+    function myfunc_pullback(dy)
+        df = NoTangent()
+        dx = J'dy # Vector-Jacobian product
+        return (df, dx)
+    end
+    return y, myfunc_pullback
+end
+```
 
-## What's the point?
+The rule returns the primal value and a function for the VJP.
 
-- Why don't we all use Enzyme?
-- Because 3 years ago it was "why don't we all use Diffractor / Zygote?"
-- New solutions like Tapir or FastDifferentiation enable different tradeoffs
+## Enzyme: type-stability and activities
 
-## DifferentiationInterface.jl & DifferentiationInterfaceTest.jl
+Enzyme should be able to differentiate most code, but if not:
 
-- Sometimes, a little performance loss is acceptable for a simpler API
-- Systematic test suites catch many errors
+- Improve type stability
+- Check that you provide temporary storage (with `Duplicated`) when necessary
+- Read the [FAQ](https://enzymead.github.io/Enzyme.jl/stable/faq/)
+
+# DifferentiationInterface
+
+## Goals
+
+- [DifferentiationInterface](https://github.com/gdalle/DifferentiationInterface.jl) (DI) offers a common syntax for all AD backends^[inspired by [AbstractDifferentiation](https://github.com/JuliaDiff/AbstractDifferentiation.jl)]
+- AD users can compare correctness and performance without reading each documentation
+- AD developers get access to a wider user base
+
+::: {.callout-warning}
+## The fine print
+
+DI may be slower than a direct call to the backend's API (mostly with Enzyme).
+:::
+
+## Supported packages
+
+<!-- Using columns to fit everything on one slide -->
+:::: {.columns}
+
+::: {.column width="50%"}
+* [ChainRulesCore](https://github.com/JuliaDiff/ChainRulesCore.jl)
+* [Diffractor](https://github.com/JuliaDiff/Diffractor.jl)
+* [Enzyme](https://github.com/EnzymeAD/Enzyme.jl)
+* [FastDifferentiation](https://github.com/brianguenter/FastDifferentiation.jl)
+* [FiniteDiff](https://github.com/JuliaDiff/FiniteDiff.jl)
+* [FiniteDifferences](https://github.com/JuliaDiff/FiniteDifferences.jl)
+* [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl)
+:::
+
+::: {.column width="50%"}
+* [PolyesterForwardDiff](https://github.com/JuliaDiff/PolyesterForwardDiff.jl)
+* [ReverseDiff](https://github.com/JuliaDiff/ReverseDiff.jl)
+* [Symbolics](https://github.com/JuliaSymbolics/Symbolics.jl)
+* [Tapir](https://github.com/withbayes/Tapir.jl)
+* [Tracker](https://github.com/FluxML/Tracker.jl)
+* [Zygote](https://github.com/FluxML/Zygote.jl)
+:::
+
+::::
+
+## Getting started with DI
+
+**Step 1:** load the necessary packages
+```{julia}
+#| output: false
+using DifferentiationInterface
+import ForwardDiff, Enzyme, Zygote
+
+f(x) = sum(abs2, x)
+x = [1.0, 2.0, 3.0, 4.0]
+```
+
+**Step 2:** Combine [DI's operators](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/operators/) with a backend from [ADTypes](https://github.com/SciML/ADTypes.jl)
+
+```{julia}
+value_and_gradient(f, AutoForwardDiff(), x)
+```
+```{julia}
+value_and_gradient(f, AutoEnzyme(), x)
+```
+```{julia}
+value_and_gradient(f, AutoZygote(), x)
+```
+
+**Step 3:** Increase performance via [DI's preparation mechanism](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial1/)
+
+## DifferentiationInterfaceTest
+
+- Systematic tests for a variety of inputs and functions
+- Scenarios with weird arrays (static, GPU, sparse)
+- Type-stability checks
+- Automated benchmarks
+
+## Sparse AD ecosystem
+
+- [SparseConnectivityTracer](https://github.com/adrhill/SparseConnectivityTracer.jl) for sparsity pattern detection
+- [SparseMatrixColorings](https://github.com/gdalle/SparseMatrixColorings.jl) for matrix coloring
+- DI for sparse Jacobians and Hessians (see [tutorial](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial2/))
+
+![Sparse autodiff with coloring [@gebremedhinWhatColorYour2005]](img/coloring.png)
+
+## What's next?
+
+DI and its sparse AD ecosystem are brand new projects:
+
+- Try them out in your code
+- Report bugs or inefficiencies
+- Help us improve these packages!
+
+::: {.callout-note}
+## Coming up in DI
+
+Multiple argument and non-array support.
+:::
+
+## Take-home message
+
+Computing derivatives in Julia is easy, but each AD backend comes with its own limitations.
+
+Learn to recognize and overcome them, either as a user or as a developer.
 
 # Appendix
 
