@@ -32,23 +32,11 @@ execute:
 
 ## Follow along
 
-
-:::: {.columns}
-
-::: {.column width="45%"}
-Slides on GitHub: 
+::: {.qr-code}
+![](img/qr/qrcode.png)
 
 [github.com/gdalle/JuliaCon2024-AutoDiff](https://github.com/gdalle/JuliaCon2024-AutoDiff)
 :::
-
-::: {.column width="10%"}
-:::
-
-::: {.column width="45%"}
-![](img/qr/qrcode.png){width="100%"}
-:::
-
-::::
 
 # Introduction
 
@@ -116,10 +104,19 @@ Imagine we need to use two packages: one for Foo, one for Bar
 
 ## Various flavors of differentiation
 
-- **Manual** (aka blood, sweat and tears): work out $f'$ by hand
-- **Numeric** (aka finite differences): $f'(x) \approx \frac{f(x+\varepsilon) - f(x)}{\varepsilon}$
-- **Symbolic** (aka computer algebra): code a formula for $f$, get a formula for $f'$
-- **Algorithmic** (aka autodiff): code a program for $f$, get a value for $f'(x)$
+- **Manual**: work out $f'$ by hand
+- **Numeric**: $f'(x) \approx \frac{f(x+\varepsilon) - f(x)}{\varepsilon}$
+- **Symbolic**: code a formula for $f$, get a formula for $f'$
+- **Algorithmic**: code a program for $f$, get a value for $f'(x)$
+
+
+::: {.notes}
+- Manual aka blood, sweat and tears
+- Numeric aka finite differences
+- Symbolic aka computer algebra
+- Algorithmic aka autodiff
+:::
+
 
 ## Algorithmic differentiation 
 
@@ -139,7 +136,8 @@ $$
 J v = J_L (J_{L-1}(\dots J_2(J_1 v)))
 $$
 
-For $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$, the $m \times n$ Jacobian requires $n$ JVPs: one per input dimension.
+For $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$, the $m \times n$ Jacobian requires $n$ JVPs:
+one per input dimension.
 
 ::: {.callout-note}
 ## Special case
@@ -151,10 +149,11 @@ The derivative of $f : \mathbb{R} \rightarrow \mathbb{R}^m$ requires just one JV
 
 Natural decomposition of **Vector-Jacobian Products** (JVPs), aka pullbacks or reverse rules:
 $$
-v^\top J v = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
+v^\top J = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
 $$
 
-For $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$, the $m \times n$ Jacobian requires $m$ VJPs: one per input dimension.
+For $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$, the $m \times n$ Jacobian requires $m$ VJPs: 
+one per input dimension.
 
 ::: {.callout-note}
 ## Special case
@@ -179,6 +178,7 @@ Low memory cost.
 :::
 
 ::: {.column width="55%"}
+
 ### Reverse mode
 
 Forward sweep + reverse sweep.
@@ -343,7 +343,7 @@ value_and_gradient(f, AutoZygote(), x)
 - [SparseMatrixColorings](https://github.com/gdalle/SparseMatrixColorings.jl) for matrix coloring
 - DI for sparse Jacobians and Hessians (see [tutorial](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial2/))
 
-![Sparse autodiff with coloring [@gebremedhinWhatColorYour2005]](img/coloring.png)
+![Sparse AD with coloring [@gebremedhinWhatColorYour2005]](img/coloring.png)
 
 ## What's next?
 
