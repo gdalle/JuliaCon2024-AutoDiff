@@ -32,28 +32,28 @@
     "href": "index.html#follow-along",
     "title": "Gradients for everyone",
     "section": "Follow along",
-    "text": "Follow along\n\nSlides available on GitHub:\n\ngithub.com/gdalle/JuliaCon2024-AutoDiff"
+    "text": "Follow along\n\n\nSlides on GitHub:\ngithub.com/gdalle/JuliaCon2024-AutoDiff"
   },
   {
     "objectID": "index.html#motivation",
     "href": "index.html#motivation",
     "title": "Gradients for everyone",
     "section": "Motivation",
-    "text": "Motivation\n\nWhat is a derivative?\nWhy do we care?"
+    "text": "Motivation\n\n\n\n\n\n\nWhat is a derivative?\n\n\nA linear approximation of a function around a point.\n\n\n\n\n\n\n\n\n\nWhy do we care?\n\n\nDerivatives are essential in optimization and machine learning.\n\n\n\n\n\n\n\n\n\nWhat do I need to do?\n\n\nNot much: with Automatic Differentiation (AD), derivatives are very easy to compute!"
   },
   {
     "objectID": "index.html#differentiable-programming",
     "href": "index.html#differentiable-programming",
     "title": "Gradients for everyone",
     "section": "Differentiable programming",
-    "text": "Differentiable programming\n\nA function is not just math\nBlocks of code are functions too"
+    "text": "Differentiable programming\n\nDifferentiable programming is a programming paradigm in which complex computer programs (including those with control flows and data structures) can be differentiated end-to-end automatically, enabling gradient-based optimization of parameters in the program. In differentiable programming, a program is also defined as the composition of elementary operations, forming a computation graph.\n\nFrom the book by Blondel and Roulet (2024)"
   },
   {
     "objectID": "index.html#three-types-of-ad-users",
     "href": "index.html#three-types-of-ad-users",
     "title": "Gradients for everyone",
     "section": "Three types of AD users",
-    "text": "Three types of AD users\n\nBackend developers want to create new AD systems\nPackage developers want to write differentiable functions\nPackage users want to differentiate through functions"
+    "text": "Three types of AD users\n\nPackage users want to differentiate through functions\nPackage developers want to write differentiable functions\nBackend developers want to create new AD systems"
   },
   {
     "objectID": "index.html#python-vs.-julia-users",
@@ -70,109 +70,60 @@
     "text": "Python vs. Julia: developers\n\n\n\nIn Python, things are simple and boring: JAX, PyTorch or TensorFlow\nIn Julia, things are complicated and fun: https://juliadiff.org/\nA lot of folklore and hidden knowledge, hard to see straight\nHow to choose an AD backend and make it work?"
   },
   {
-    "objectID": "index.html#a-multifaceted-concept",
-    "href": "index.html#a-multifaceted-concept",
+    "objectID": "index.html#various-flavors-of-differentiation",
+    "href": "index.html#various-flavors-of-differentiation",
     "title": "Gradients for everyone",
-    "section": "A multifaceted concept",
-    "text": "A multifaceted concept\nSee Blondel and Roulet (2024) for a deep dive:"
-  },
-  {
-    "objectID": "index.html#numeric-differentiation",
-    "href": "index.html#numeric-differentiation",
-    "title": "Gradients for everyone",
-    "section": "Numeric differentiation",
-    "text": "Numeric differentiation"
-  },
-  {
-    "objectID": "index.html#symbolic-differentiation",
-    "href": "index.html#symbolic-differentiation",
-    "title": "Gradients for everyone",
-    "section": "Symbolic differentiation",
-    "text": "Symbolic differentiation"
+    "section": "Various flavors of differentiation",
+    "text": "Various flavors of differentiation\n\nManual (aka blood, sweat and tears): work out \\(f'\\) by hand\nNumeric (aka finite differences): \\(f'(x) \\approx \\frac{f(x+\\varepsilon) - f(x)}{\\varepsilon}\\)\nSymbolic (aka computer algebra): code a formula for \\(f\\), get a formula for \\(f'\\)\nAlgorithmic (aka autodiff): code a program for \\(f\\), get a value for \\(f'(x)\\)"
   },
   {
     "objectID": "index.html#algorithmic-differentiation",
     "href": "index.html#algorithmic-differentiation",
     "title": "Gradients for everyone",
     "section": "Algorithmic differentiation",
-    "text": "Algorithmic differentiation\n\nLet’s look at a function \\(h(x)=g(f(x))\\) composed from two differentiable functions \\(f: \\mathbb{R}^n \\rightarrow \\mathbb{R}^m\\) and \\(g: \\mathbb{R}^m \\rightarrow \\mathbb{R}^p\\) \\[\nh = g \\circ f \\quad .\n\\]\nThe Jacobian of \\(h\\) can be obtained from the Jacobians of \\(g\\) and \\(f\\) using the chain rule:\n\\[\nJ_h\\big|_x = J_{g}\\big|_{f(x)} \\cdot J_{f}\\big|_{x}\n\\]\nFor functions with “deeper” compositional structure, we need to compute the products of many Jacobians.\n\nIf implemented naively, full Jacobians require a lot of memory\nInstead, let’s do this matrix-free using JVPs and VJPs!"
+    "text": "Algorithmic differentiation\nThree key ideas:\n\nProgram = composition chain (or DAG) of many functions\nJacobian of \\(f = f_L \\circ \\dots \\circ f_2 \\circ f_1\\) given by the chain rule: \\[\nJ = J_L J_{L-1} \\dots J_2 J_1\n\\]\nAvoid materializing full Jacobians with matrix-vector products"
   },
   {
-    "objectID": "index.html#jacobian-vector-products",
-    "href": "index.html#jacobian-vector-products",
+    "objectID": "index.html#forward-mode",
+    "href": "index.html#forward-mode",
     "title": "Gradients for everyone",
-    "section": "Jacobian-vector products",
-    "text": "Jacobian-vector products\n\nAlso called JVPs, pushforwards or forward rules\nMultiplying Jacobian with \\(i\\)-th column basis vector \\(e_i\\) computes \\(i\\)-th column of Jacobian \\[\n\\begin{equation}\nJ_f\\big|_x \\cdot e_i\n= \\begin{bmatrix}\n    \\dfrac{\\partial f_1}{\\partial x_1}\\Bigg|_x & \\cdots &\n  \\dfrac{\\partial f_1}{\\partial x_n}\\Bigg|_x\\\\\n    \\vdots                             & \\ddots & \\vdots\\\\\n    \\dfrac{\\partial f_m}{\\partial x_1}\\Bigg|_x & \\cdots &\n  \\dfrac{\\partial f_m}{\\partial x_n}\\Bigg|_x\n\\end{bmatrix} \\cdot e_i\n= \\begin{bmatrix}\n    \\dfrac{\\partial f_1}{\\partial x_i}\\Bigg|_x \\\\\n    \\vdots \\\\\n    \\dfrac{\\partial f_m}{\\partial x_i}\\Bigg|_x \\\\\n\\end{bmatrix}\n=: \\mathcal{D}f_x(e_i)\n\\end{equation}\n\\]\nFor \\(f: \\mathbb{R}^n \\rightarrow \\mathbb{R}^m\\), computing the full \\(m \\times n\\) Jacobian requires computing \\(n\\,\\) JVPs:\none for each column, as many as the input dimensionality of \\(f\\)."
+    "section": "Forward mode",
+    "text": "Forward mode\nNatural decomposition of Jacobian-Vector Products (JVPs), aka pushforwards or forward rules: \\[\nJ v = J_L (J_{L-1}(\\dots J_2(J_1 v)))\n\\]\nFor \\(f: \\mathbb{R}^n \\rightarrow \\mathbb{R}^m\\), the \\(m \\times n\\) Jacobian requires \\(n\\) JVPs: one per input dimension.\n\n\n\n\n\n\nSpecial case\n\n\nThe derivative of \\(f : \\mathbb{R} \\rightarrow \\mathbb{R}^m\\) requires just one JVP."
   },
   {
-    "objectID": "index.html#vector-jacobian-products",
-    "href": "index.html#vector-jacobian-products",
+    "objectID": "index.html#reverse-mode",
+    "href": "index.html#reverse-mode",
     "title": "Gradients for everyone",
-    "section": "Vector-Jacobian products",
-    "text": "Vector-Jacobian products\n\nAlso called VJPs, pullbacks or reverse rules\nMultiplying \\(i\\)-th row basis vector \\(e_i^T\\) with Jacobian computes \\(i\\)-th row of Jacobian \\[\n\\begin{align}\ne_i^T \\cdot J_f\\big|_x\n&= e_i^T \\cdot \\begin{bmatrix}\n    \\dfrac{\\partial f_1}{\\partial x_1}\\Bigg|_x & \\cdots &\n  \\dfrac{\\partial f_1}{\\partial x_n}\\Bigg|_x\\\\\n    \\vdots                             & \\ddots & \\vdots\\\\\n    \\dfrac{\\partial f_m}{\\partial x_1}\\Bigg|_x & \\cdots &\n  \\dfrac{\\partial f_m}{\\partial x_n}\\Bigg|_x\n\\end{bmatrix} \\\\[0.5em]\n&= \\hspace{1.35em}\\begin{bmatrix}\n    \\dfrac{\\partial f_i}{\\partial x_1}\\Bigg|_x & \\cdots &\n  \\dfrac{\\partial f_i}{\\partial x_n}\\Bigg|_x\n\\end{bmatrix}\n=: \\mathcal{D}^{*}f_x(e_i)\n\\end{align}\n\\]\nComputing the full \\(m \\times n\\) Jacobian requires computing \\(m\\,\\) VJPs: one for each row, as many as the output dimensionality of \\(f\\)."
+    "section": "Reverse mode",
+    "text": "Reverse mode\nNatural decomposition of Vector-Jacobian Products (JVPs), aka pullbacks or reverse rules: \\[\nv^\\top J v = (((v^\\top J_L) J_{L-1}) \\dots J_2)J_1\n\\]\nFor \\(f: \\mathbb{R}^n \\rightarrow \\mathbb{R}^m\\), the \\(m \\times n\\) Jacobian requires \\(m\\) VJPs: one per input dimension.\n\n\n\n\n\n\nSpecial case\n\n\nThe gradient of \\(f : \\mathbb{R}^n \\rightarrow \\mathbb{R}\\) requires just one JVP."
   },
   {
-    "objectID": "index.html#forward-mode-theory",
-    "href": "index.html#forward-mode-theory",
+    "objectID": "index.html#implementation-details",
+    "href": "index.html#implementation-details",
     "title": "Gradients for everyone",
-    "section": "Forward mode – Theory",
-    "text": "Forward mode – Theory\n\nAssuming a function \\(f(x) = f^N(\\ldots f^2(f^1(x)))\\) with intermediate activations \\[\nh_1 = f^1(x) \\,,\\quad\nh_2 = f^2(f^1(x)) \\,,\\quad\nh_k = f^{k}(h_{k-1}) \\,,\n\\]\nwe can compute JVPs of \\(f\\) by forward-accumulating JVPs of \\(f^i\\): \\[\n% parentheses for emphasis\nJ_f\\big|_x \\cdot v\n= J_{f^{N  }}\\big|_{h_{N-1}} \\cdot\n  \\Big( \\ldots \\cdot\n  \\Big( J_{f^{2  }}\\big|_{h_{1  }} \\cdot\n  \\Big( J_{f^{1  }}\\big|_{x} \\cdot v \\Big)\\Big)\n\\Big)\n\\]\nor in terms of pushforwards: \\[\n\\mathcal{D}f_x(v)\n= \\big(\n  \\mathcal{D}f^{N}_{h_{N-1}} \\circ \\ldots \\circ\n  \\mathcal{D}f^2_{h_1}  \\circ\n  \\mathcal{D}f^1_{x}\n\\big)(v)  \n\\]"
-  },
-  {
-    "objectID": "index.html#forward-mode-implementation",
-    "href": "index.html#forward-mode-implementation",
-    "title": "Gradients for everyone",
-    "section": "Forward mode – Implementation",
-    "text": "Forward mode – Implementation"
-  },
-  {
-    "objectID": "index.html#reverse-mode-theory",
-    "href": "index.html#reverse-mode-theory",
-    "title": "Gradients for everyone",
-    "section": "Reverse mode – Theory",
-    "text": "Reverse mode – Theory\n\nwe can compute VJPs of \\(f\\) by reverse-accumulating VJPs of \\(f^i\\): \\[\n% parentheses for emphasis\nw^T \\cdot J_f\\big|_x\n= \\Big(\\Big(\\Big( w^T \\cdot\n  J_{f^{N  }}\\big|_{h_{N-1}} \\Big) \\cdot\n  J_{f^{N-1}}\\big|_{h_{N-2}} \\Big) \\cdot \\ldots \\Big)  \\cdot\n  J_{f^{1  }}\\big|_x\n\\]\nor in terms of pullbacks: \\[\n\\mathcal{D}^{*}f_x(w)\n= \\big(\n  \\mathcal{D}^{*}f^{1  }_x  \\circ \\ldots \\circ\n  \\mathcal{D}^{*}f^{N-1}_{h_{N-2}} \\circ\n  \\mathcal{D}^{*}f^{N  }_{h_{N-1}}\n\\big) (w)\n\\]"
-  },
-  {
-    "objectID": "index.html#reverse-mode-implementation",
-    "href": "index.html#reverse-mode-implementation",
-    "title": "Gradients for everyone",
-    "section": "Reverse mode – Implementation",
-    "text": "Reverse mode – Implementation"
+    "section": "Implementation details",
+    "text": "Implementation details\n\n\nForward mode\nForward sweep only.\nBased on dual numbers.\nLow memory cost.\n\n\nReverse mode\nForward sweep + reverse sweep.\nBased on tapes.\nHigh memory cost.\n\n\nImages from Blondel and Roulet (2024)"
   },
   {
     "objectID": "index.html#why-so-many-backends",
     "href": "index.html#why-so-many-backends",
     "title": "Gradients for everyone",
     "section": "Why so many backends?",
-    "text": "Why so many backends?\n\nConflicting paradigms:\n\nnumeric vs. symbolic vs. algorithmic\nsource-to-source vs. operator overloading\nJulia AST vs. Julia IR vs. LLVM level\n\nCover varying subsets of the language\nHistorical reasons: developed by different people"
+    "text": "Why so many backends?\n\nConflicting paradigms:\n\nnumeric vs. symbolic vs. algorithmic\noperator overloading vs. source-to-source (which source?)\n\nCover varying subsets of the language\nHistorical reasons: developed by different people"
   },
   {
-    "objectID": "index.html#useful-criteria",
-    "href": "index.html#useful-criteria",
+    "objectID": "index.html#meaningful-criteria",
+    "href": "index.html#meaningful-criteria",
     "title": "Gradients for everyone",
-    "section": "Useful criteria",
-    "text": "Useful criteria\n\nDoes this backend execute without error?\nDoes it return the right derivative?\nDoes it run fast enough for me?"
+    "section": "Meaningful criteria",
+    "text": "Meaningful criteria\n\nDoes this AD backend execute without error?\nDoes it return the right derivative?\nDoes it run fast enough for me?"
   },
   {
     "objectID": "index.html#a-simple-decision-tree",
     "href": "index.html#a-simple-decision-tree",
     "title": "Gradients for everyone",
     "section": "A simple decision tree",
-    "text": "A simple decision tree\n\nFollow recommendations of high-level library (e.g. Flux.jl)\nOtherwise, choose between forward and reverse mode based on input and output dimensions\nTry out the most battle-tested backends:\n\n\n\nForward mode\n\nForwardDiff\nEnzyme\n\n\nReverse mode\n\nZygote\nEnzyme\n\n\nIf nothing works, fall back on finite differences"
-  },
-  {
-    "objectID": "index.html#supported-backends",
-    "href": "index.html#supported-backends",
-    "title": "Gradients for everyone",
-    "section": "Supported backends",
-    "text": "Supported backends\n\n\n\n\nChainRulesCore.jl\nDiffractor.jl\nEnzyme.jl\nFastDifferentiation.jl\nFiniteDiff.jl\nFiniteDifferences.jl\nForwardDiff.jl\n\n\n\nPolyesterForwardDiff.jl\nReverseDiff.jl\nSymbolics.jl\nTapir.jl\nTracker.jl\nZygote.jl\n\n\nUsing ADTypes.jl to select backends."
-  },
-  {
-    "objectID": "index.html#getting-started-with-di",
-    "href": "index.html#getting-started-with-di",
-    "title": "Gradients for everyone",
-    "section": "Getting started with DI",
-    "text": "Getting started with DI\nStep 1: import desired backends\n\nusing DifferentiationInterface\nimport ForwardDiff, Enzyme, Zygote\n\nf(x) = sum(abs2, x)\nx = [1.0, 2.0, 3.0, 4.0]\n\nStep 2: Call DI’s operators using ADTypes\n\nvalue_and_gradient(f, AutoForwardDiff(), x)\n\n(30.0, [2.0, 4.0, 6.0, 8.0])\n\n\n\nvalue_and_gradient(f, AutoEnzyme(), x)\n\n(30.0, [2.0, 4.0, 6.0, 8.0])\n\n\n\nvalue_and_gradient(f, AutoZygote(), x)\n\n(30.0, [2.0, 4.0, 6.0, 8.0])\n\n\nStep 3: Increase performance via DI’s preparation mechanism"
+    "text": "A simple decision tree\n\nFollow recommendations of high-level library (e.g. Flux)\nChoose mode based on input and output dimensions\nTry the most battle-tested backends:\n\n\nin forward mode: ForwardDiff or Enzyme\nin reverse mode: Zygote or Enzyme\n\n\nIf nothing works, fall back on finite differences"
   },
   {
     "objectID": "index.html#typical-failures",
@@ -186,48 +137,76 @@
     "href": "index.html#forwarddiff-type-genericity",
     "title": "Gradients for everyone",
     "section": "ForwardDiff: type-genericity",
-    "text": "ForwardDiff: type-genericity"
+    "text": "ForwardDiff: type-genericity\nForwardDiff propagates numbers of type Dual.\n\n\n\nreplace this\nwith that\n\n\n\n\nf(x::Vector{Float64})\nf(x::Vector{&lt;:Real})\n\n\nzeros(n)\nzeros(eltype(x), n)"
   },
   {
     "objectID": "index.html#zygote-custom-rules",
     "href": "index.html#zygote-custom-rules",
     "title": "Gradients for everyone",
     "section": "Zygote: custom rules",
-    "text": "Zygote: custom rules"
+    "text": "Zygote: custom rules\nIf Zygote fails or is too slow, define a custom rule with ChainRulesCore:\nusing ChainRulesCore\n\nfunction ChainRulesCore.rrule(::typeof{myfunc}, x)\n    y = myfunc(x)\n    function myfunc_pullback(dy)\n        df = NoTangent()\n        dx = J'dy # Vector-Jacobian product\n        return (df, dx)\n    end\n    return y, myfunc_pullback\nend\nThe rule returns the primal value and a function for the VJP."
   },
   {
-    "objectID": "index.html#enzyme-type-stability",
-    "href": "index.html#enzyme-type-stability",
+    "objectID": "index.html#enzyme-type-stability-and-activities",
+    "href": "index.html#enzyme-type-stability-and-activities",
     "title": "Gradients for everyone",
-    "section": "Enzyme: type-stability",
-    "text": "Enzyme: type-stability"
+    "section": "Enzyme: type-stability and activities",
+    "text": "Enzyme: type-stability and activities\nEnzyme should be able to differentiate most code, but if not:\n\nImprove type stability\nCheck that you provide temporary storage (with Duplicated) when necessary\nRead the FAQ"
   },
   {
-    "objectID": "index.html#differentiationinterfacetest.jl",
-    "href": "index.html#differentiationinterfacetest.jl",
+    "objectID": "index.html#goals",
+    "href": "index.html#goals",
     "title": "Gradients for everyone",
-    "section": "DifferentiationInterfaceTest.jl",
-    "text": "DifferentiationInterfaceTest.jl"
+    "section": "Goals",
+    "text": "Goals\n\nDifferentiationInterface (DI) offers a common syntax for all AD backends1\nAD users can compare correctness and performance without reading each documentation\nAD developers get access to a wider user base\n\n\n\n\n\n\n\nThe fine print\n\n\nDI may be slower than a direct call to the backend’s API (mostly with Enzyme).\n\n\n\ninspired by AbstractDifferentiation"
   },
   {
-    "objectID": "index.html#whats-the-point",
-    "href": "index.html#whats-the-point",
+    "objectID": "index.html#supported-packages",
+    "href": "index.html#supported-packages",
     "title": "Gradients for everyone",
-    "section": "What’s the point?",
-    "text": "What’s the point?\n\nWhy don’t we all use Enzyme?\nBecause 3 years ago it was “why don’t we all use Diffractor / Zygote?”\nNew solutions like Tapir or FastDifferentiation enable different tradeoffs"
+    "section": "Supported packages",
+    "text": "Supported packages\n\n\n\n\nChainRulesCore\nDiffractor\nEnzyme\nFastDifferentiation\nFiniteDiff\nFiniteDifferences\nForwardDiff\n\n\n\nPolyesterForwardDiff\nReverseDiff\nSymbolics\nTapir\nTracker\nZygote"
   },
   {
-    "objectID": "index.html#differentiationinterface.jl-differentiationinterfacetest.jl",
-    "href": "index.html#differentiationinterface.jl-differentiationinterfacetest.jl",
+    "objectID": "index.html#getting-started-with-di",
+    "href": "index.html#getting-started-with-di",
     "title": "Gradients for everyone",
-    "section": "DifferentiationInterface.jl & DifferentiationInterfaceTest.jl",
-    "text": "DifferentiationInterface.jl & DifferentiationInterfaceTest.jl\n\nSometimes, a little performance loss is acceptable for a simpler API\nSystematic test suites catch many errors"
+    "section": "Getting started with DI",
+    "text": "Getting started with DI\nStep 1: load the necessary packages\n\nusing DifferentiationInterface\nimport ForwardDiff, Enzyme, Zygote\n\nf(x) = sum(abs2, x)\nx = [1.0, 2.0, 3.0, 4.0]\n\nStep 2: Combine DI’s operators with a backend from ADTypes\n\nvalue_and_gradient(f, AutoForwardDiff(), x)\n\n(30.0, [2.0, 4.0, 6.0, 8.0])\n\n\n\nvalue_and_gradient(f, AutoEnzyme(), x)\n\n(30.0, [2.0, 4.0, 6.0, 8.0])\n\n\n\nvalue_and_gradient(f, AutoZygote(), x)\n\n(30.0, [2.0, 4.0, 6.0, 8.0])\n\n\nStep 3: Increase performance via DI’s preparation mechanism"
+  },
+  {
+    "objectID": "index.html#differentiationinterfacetest",
+    "href": "index.html#differentiationinterfacetest",
+    "title": "Gradients for everyone",
+    "section": "DifferentiationInterfaceTest",
+    "text": "DifferentiationInterfaceTest\n\nSystematic tests for a variety of inputs and functions\nScenarios with weird arrays (static, GPU, sparse)\nType-stability checks\nAutomated benchmarks"
+  },
+  {
+    "objectID": "index.html#sparse-ad-ecosystem",
+    "href": "index.html#sparse-ad-ecosystem",
+    "title": "Gradients for everyone",
+    "section": "Sparse AD ecosystem",
+    "text": "Sparse AD ecosystem\n\nSparseConnectivityTracer for sparsity pattern detection\nSparseMatrixColorings for matrix coloring\nDI for sparse Jacobians and Hessians (see tutorial)\n\n\nSparse autodiff with coloring (Gebremedhin, Manne, and Pothen 2005)"
+  },
+  {
+    "objectID": "index.html#whats-next",
+    "href": "index.html#whats-next",
+    "title": "Gradients for everyone",
+    "section": "What’s next?",
+    "text": "What’s next?\nDI and its sparse AD ecosystem are brand new projects:\n\nTry them out in your code\nReport bugs or inefficiencies\nHelp us improve these packages!\n\n\n\n\n\n\n\nComing up in DI\n\n\nMultiple argument and non-array support."
+  },
+  {
+    "objectID": "index.html#take-home-message",
+    "href": "index.html#take-home-message",
+    "title": "Gradients for everyone",
+    "section": "Take-home message",
+    "text": "Take-home message\nComputing derivatives in Julia is easy, but each AD backend comes with its own limitations.\nLearn to recognize and overcome them, either as a user or as a developer."
   },
   {
     "objectID": "index.html#references",
     "href": "index.html#references",
     "title": "Gradients for everyone",
     "section": "References",
-    "text": "References\n\n\nBlondel, Mathieu, and Vincent Roulet. 2024. “The Elements of Differentiable Programming.” arXiv. https://doi.org/10.48550/arXiv.2403.14606."
+    "text": "References\n\n\nBlondel, Mathieu, and Vincent Roulet. 2024. “The Elements of Differentiable Programming.” arXiv. https://doi.org/10.48550/arXiv.2403.14606.\n\n\nGebremedhin, Assefaw Hadish, Fredrik Manne, and Alex Pothen. 2005. “What Color Is Your Jacobian? Graph Coloring for Computing Derivatives.” SIAM Review 47 (4): 629–705. https://doi.org/cmwds4."
   }
 ]

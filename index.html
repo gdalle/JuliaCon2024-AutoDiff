@@ -455,19 +455,23 @@ Adrian Hill <a href="https://orcid.org/0009-0009-5977-301X" class="quarto-title-
 <li><a href="#/introduction" id="/toc-introduction">Introduction</a></li>
 <li><a href="#/how-ad-works" id="/toc-how-ad-works">How AD works</a></li>
 <li><a href="#/using-ad" id="/toc-using-ad">Using AD</a></li>
-<li><a href="#/differentiationinterface.jl" id="/toc-differentiationinterface.jl">DifferentiationInterface.jl</a></li>
 <li><a href="#/enabling-ad" id="/toc-enabling-ad">Enabling AD</a></li>
-<li><a href="#/developing-ad" id="/toc-developing-ad">Developing AD</a></li>
+<li><a href="#/differentiationinterface" id="/toc-differentiationinterface">DifferentiationInterface</a></li>
 <li><a href="#/appendix" id="/toc-appendix">Appendix</a></li>
 </ul>
 </nav>
 </section>
 <section id="follow-along" class="slide level2">
 <h2>Follow along</h2>
-<!-- Ideally, we figure out how to put this on the title slide -->
-<p>Slides available on GitHub:</p>
+<div class="columns">
+<div class="column" style="width:45%;">
+<p>Slides on GitHub:</p>
+<p><a href="https://github.com/gdalle/JuliaCon2024-AutoDiff">github.com/gdalle/JuliaCon2024-AutoDiff</a></p>
+</div><div class="column" style="width:10%;">
 
-<img data-src="img/qr/qrcode.png" class="r-stretch"><p><a href="https://github.com/gdalle/JuliaCon2024-AutoDiff">github.com/gdalle/JuliaCon2024-AutoDiff</a></p>
+</div><div class="column" style="width:45%;">
+<p><img data-src="img/qr/qrcode.png" style="width:100.0%"></p>
+</div></div>
 </section>
 <section>
 <section id="introduction" class="title-slide slide level1 center">
@@ -476,24 +480,59 @@ Adrian Hill <a href="https://orcid.org/0009-0009-5977-301X" class="quarto-title-
 </section>
 <section id="motivation" class="slide level2">
 <h2>Motivation</h2>
-<ul>
-<li>What is a derivative?</li>
-<li>Why do we care?</li>
-</ul>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>What is a derivative?</strong></p>
+</div>
+<div class="callout-content">
+<p>A linear approximation of a function around a point.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Why do we care?</strong></p>
+</div>
+<div class="callout-content">
+<p>Derivatives are essential in optimization and machine learning.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>What do I need to do?</strong></p>
+</div>
+<div class="callout-content">
+<p>Not much: with Automatic Differentiation (AD), derivatives are very easy to compute!</p>
+</div>
+</div>
+</div>
 </section>
 <section id="differentiable-programming" class="slide level2">
 <h2>Differentiable programming</h2>
-<ul>
-<li>A function is not just math</li>
-<li>Blocks of code are functions too</li>
-</ul>
+<blockquote>
+<p>Differentiable programming is a programming paradigm in which <strong>complex computer programs</strong> (including those with control flows and data structures) can be <strong>differentiated end-to-end automatically</strong>, enabling gradient-based optimization of parameters in the program. In differentiable programming, a program is also defined as the composition of elementary operations, forming a <strong>computation graph</strong>.</p>
+</blockquote>
+<p>From the book by <span class="citation" data-cites="blondelElementsDifferentiableProgramming2024">Blondel and Roulet (<a href="#/references" role="doc-biblioref" onclick="">2024</a>)</span></p>
 </section>
 <section id="three-types-of-ad-users" class="slide level2">
 <h2>Three types of AD users</h2>
 <ol type="1">
-<li><strong>Backend developers</strong> want to create new AD systems</li>
-<li><strong>Package developers</strong> want to write differentiable functions</li>
 <li><strong>Package users</strong> want to differentiate through functions</li>
+<li><strong>Package developers</strong> want to write differentiable functions</li>
+<li><strong>Backend developers</strong> want to create new AD systems</li>
 </ol>
 </section>
 <section id="python-vs.-julia-users" class="slide level2">
@@ -556,138 +595,83 @@ Adrian Hill <a href="https://orcid.org/0009-0009-5977-301X" class="quarto-title-
 <h1>How AD works</h1>
 
 </section>
-<section id="a-multifaceted-concept" class="slide level2">
-<h2>A multifaceted concept</h2>
-<p>See <span class="citation" data-cites="blondelElementsDifferentiableProgramming2024">Blondel and Roulet (<a href="#/references" role="doc-biblioref" onclick="">2024</a>)</span> for a deep dive:</p>
+<section id="various-flavors-of-differentiation" class="slide level2">
+<h2>Various flavors of differentiation</h2>
+<ul>
+<li><strong>Manual</strong> (aka blood, sweat and tears): work out <span class="math inline">\(f'\)</span> by hand</li>
+<li><strong>Numeric</strong> (aka finite differences): <span class="math inline">\(f'(x) \approx \frac{f(x+\varepsilon) - f(x)}{\varepsilon}\)</span></li>
+<li><strong>Symbolic</strong> (aka computer algebra): code a formula for <span class="math inline">\(f\)</span>, get a formula for <span class="math inline">\(f'\)</span></li>
+<li><strong>Algorithmic</strong> (aka autodiff): code a program for <span class="math inline">\(f\)</span>, get a value for <span class="math inline">\(f'(x)\)</span></li>
+</ul>
 </section>
-<section id="numeric-differentiation" class="slide level2">
-<h2>Numeric differentiation</h2>
-</section>
-<section id="symbolic-differentiation" class="slide level2">
-<h2>Symbolic differentiation</h2>
-</section>
-<section id="algorithmic-differentiation" class="slide level2 smaller">
+<section id="algorithmic-differentiation" class="slide level2">
 <h2>Algorithmic differentiation</h2>
-<ul>
-<li><p>Let’s look at a function <span class="math inline">\(h(x)=g(f(x))\)</span> composed from two differentiable functions <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span> and <span class="math inline">\(g: \mathbb{R}^m \rightarrow \mathbb{R}^p\)</span> <span class="math display">\[
-h = g \circ f \quad .
-\]</span></p></li>
-<li><p>The Jacobian of <span class="math inline">\(h\)</span> can be obtained from the Jacobians of <span class="math inline">\(g\)</span> and <span class="math inline">\(f\)</span> using the <strong>chain rule</strong>:</p>
-<p><span class="math display">\[
-J_h\big|_x = J_{g}\big|_{f(x)} \cdot J_{f}\big|_{x}
-\]</span></p></li>
-<li><p>For functions with “deeper” compositional structure, we need to compute the products of many Jacobians.</p>
-<ul>
-<li>If implemented naively, full Jacobians require a lot of memory</li>
-<li><strong>Instead, let’s do this matrix-free using JVPs and VJPs!</strong></li>
-</ul></li>
-</ul>
+<p>Three key ideas:</p>
+<ol type="1">
+<li>Program = composition chain (or DAG) of many functions</li>
+<li>Jacobian of <span class="math inline">\(f = f_L \circ \dots \circ f_2 \circ f_1\)</span> given by the chain rule: <span class="math display">\[
+J = J_L J_{L-1} \dots J_2 J_1
+\]</span></li>
+<li>Avoid materializing full Jacobians with matrix-vector products</li>
+</ol>
 </section>
-<section id="jacobian-vector-products" class="slide level2 smaller">
-<h2>Jacobian-vector products</h2>
-<ul>
-<li><p>Also called <strong>JVPs</strong>, <strong>pushforwards</strong> or <strong>forward rules</strong></p></li>
-<li><p>Multiplying Jacobian with <span class="math inline">\(i\)</span>-th column basis vector <span class="math inline">\(e_i\)</span> computes <span class="math inline">\(i\)</span>-th column of Jacobian <span class="math display">\[
-\begin{equation}
-J_f\big|_x \cdot e_i
-= \begin{bmatrix}
-    \dfrac{\partial f_1}{\partial x_1}\Bigg|_x &amp; \cdots &amp;
-  \dfrac{\partial f_1}{\partial x_n}\Bigg|_x\\
-    \vdots                             &amp; \ddots &amp; \vdots\\
-    \dfrac{\partial f_m}{\partial x_1}\Bigg|_x &amp; \cdots &amp;
-  \dfrac{\partial f_m}{\partial x_n}\Bigg|_x
-\end{bmatrix} \cdot e_i
-= \begin{bmatrix}
-    \dfrac{\partial f_1}{\partial x_i}\Bigg|_x \\
-    \vdots \\
-    \dfrac{\partial f_m}{\partial x_i}\Bigg|_x \\
-\end{bmatrix}
-=: \mathcal{D}f_x(e_i)
-\end{equation}
-\]</span></p></li>
-<li><p>For <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span>, computing the full <span class="math inline">\(m \times n\)</span> Jacobian requires computing <span class="math inline">\(n\,\)</span> JVPs:<br>
-one for each column, as many as the <strong>input dimensionality</strong> of <span class="math inline">\(f\)</span>.</p></li>
-</ul>
-</section>
-<section id="vector-jacobian-products" class="slide level2 smaller">
-<h2>Vector-Jacobian products</h2>
-<ul>
-<li><p>Also called <strong>VJPs</strong>, <strong>pullbacks</strong> or <strong>reverse rules</strong></p></li>
-<li><p>Multiplying <span class="math inline">\(i\)</span>-th row basis vector <span class="math inline">\(e_i^T\)</span> with Jacobian computes <span class="math inline">\(i\)</span>-th row of Jacobian <span class="math display">\[
-\begin{align}
-e_i^T \cdot J_f\big|_x
-&amp;= e_i^T \cdot \begin{bmatrix}
-    \dfrac{\partial f_1}{\partial x_1}\Bigg|_x &amp; \cdots &amp;
-  \dfrac{\partial f_1}{\partial x_n}\Bigg|_x\\
-    \vdots                             &amp; \ddots &amp; \vdots\\
-    \dfrac{\partial f_m}{\partial x_1}\Bigg|_x &amp; \cdots &amp;
-  \dfrac{\partial f_m}{\partial x_n}\Bigg|_x
-\end{bmatrix} \\[0.5em]
-&amp;= \hspace{1.35em}\begin{bmatrix}
-    \dfrac{\partial f_i}{\partial x_1}\Bigg|_x &amp; \cdots &amp;
-  \dfrac{\partial f_i}{\partial x_n}\Bigg|_x
-\end{bmatrix}
-=: \mathcal{D}^{*}f_x(e_i)
-\end{align}
-\]</span></p></li>
-<li><p>Computing the full <span class="math inline">\(m \times n\)</span> Jacobian requires computing <span class="math inline">\(m\,\)</span> VJPs: one for each row, as many as the <strong>output dimensionality</strong> of <span class="math inline">\(f\)</span>.</p></li>
-</ul>
-</section>
-<section id="forward-mode-theory" class="slide level2 smaller">
-<h2>Forward mode – Theory</h2>
-<ul>
-<li><p>Assuming a function <span class="math inline">\(f(x) = f^N(\ldots f^2(f^1(x)))\)</span> with intermediate activations <span class="math display">\[
-h_1 = f^1(x) \,,\quad
-h_2 = f^2(f^1(x)) \,,\quad
-h_k = f^{k}(h_{k-1}) \,,
+<section id="forward-mode" class="slide level2">
+<h2>Forward mode</h2>
+<p>Natural decomposition of <strong>Jacobian-Vector Products</strong> (JVPs), aka pushforwards or forward rules: <span class="math display">\[
+J v = J_L (J_{L-1}(\dots J_2(J_1 v)))
 \]</span></p>
-<p>we can compute JVPs of <span class="math inline">\(f\)</span> by <strong>forward-accumulating</strong> JVPs of <span class="math inline">\(f^i\)</span>: <span class="math display">\[
-% parentheses for emphasis
-J_f\big|_x \cdot v
-= J_{f^{N  }}\big|_{h_{N-1}} \cdot
-  \Big( \ldots \cdot
-  \Big( J_{f^{2  }}\big|_{h_{1  }} \cdot
-  \Big( J_{f^{1  }}\big|_{x} \cdot v \Big)\Big)
-\Big)
-\]</span></p></li>
-<li><p>or in terms of <strong>pushforwards</strong>: <span class="math display">\[
-\mathcal{D}f_x(v)
-= \big(
-  \mathcal{D}f^{N}_{h_{N-1}} \circ \ldots \circ
-  \mathcal{D}f^2_{h_1}  \circ
-  \mathcal{D}f^1_{x}
-\big)(v)  
-\]</span></p></li>
-</ul>
-
-<img data-src="index_files/figure-revealjs/cell-2-output-1.svg" class="r-stretch"></section>
-<section id="forward-mode-implementation" class="slide level2">
-<h2>Forward mode – Implementation</h2>
+<p>For <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span>, the <span class="math inline">\(m \times n\)</span> Jacobian requires <span class="math inline">\(n\)</span> JVPs: one per input dimension.</p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Special case</strong></p>
+</div>
+<div class="callout-content">
+<p>The derivative of <span class="math inline">\(f : \mathbb{R} \rightarrow \mathbb{R}^m\)</span> requires just one JVP.</p>
+</div>
+</div>
+</div>
 </section>
-<section id="reverse-mode-theory" class="slide level2 smaller">
-<h2>Reverse mode – Theory</h2>
-<ul>
-<li><p>we can compute VJPs of <span class="math inline">\(f\)</span> by <strong>reverse-accumulating</strong> VJPs of <span class="math inline">\(f^i\)</span>: <span class="math display">\[
-% parentheses for emphasis
-w^T \cdot J_f\big|_x
-= \Big(\Big(\Big( w^T \cdot
-  J_{f^{N  }}\big|_{h_{N-1}} \Big) \cdot
-  J_{f^{N-1}}\big|_{h_{N-2}} \Big) \cdot \ldots \Big)  \cdot
-  J_{f^{1  }}\big|_x
-\]</span></p></li>
-<li><p>or in terms of <strong>pullbacks</strong>: <span class="math display">\[
-\mathcal{D}^{*}f_x(w)
-= \big(
-  \mathcal{D}^{*}f^{1  }_x  \circ \ldots \circ
-  \mathcal{D}^{*}f^{N-1}_{h_{N-2}} \circ
-  \mathcal{D}^{*}f^{N  }_{h_{N-1}}
-\big) (w)
-\]</span></p></li>
-</ul>
-
-<img data-src="index_files/figure-revealjs/cell-3-output-1.svg" class="r-stretch"></section>
-<section id="reverse-mode-implementation" class="slide level2">
-<h2>Reverse mode – Implementation</h2>
+<section id="reverse-mode" class="slide level2">
+<h2>Reverse mode</h2>
+<p>Natural decomposition of <strong>Vector-Jacobian Products</strong> (JVPs), aka pullbacks or reverse rules: <span class="math display">\[
+v^\top J v = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
+\]</span></p>
+<p>For <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span>, the <span class="math inline">\(m \times n\)</span> Jacobian requires <span class="math inline">\(m\)</span> VJPs: one per input dimension.</p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Special case</strong></p>
+</div>
+<div class="callout-content">
+<p>The gradient of <span class="math inline">\(f : \mathbb{R}^n \rightarrow \mathbb{R}\)</span> requires just one JVP.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="implementation-details" class="slide level2">
+<h2>Implementation details</h2>
+<div class="columns">
+<div class="column" style="width:45%;">
+<h3 id="forward-mode-1">Forward mode</h3>
+<p>Forward sweep only.</p>
+<p>Based on dual numbers.</p>
+<p>Low memory cost.</p>
+<p><img data-src="img/forward.png" style="width:100.0%"></p>
+</div><div class="column" style="width:55%;">
+<h3 id="reverse-mode-1">Reverse mode</h3>
+<p>Forward sweep + reverse sweep.</p>
+<p>Based on tapes.</p>
+<p>High memory cost.</p>
+<p><img data-src="img/reverse.png" style="width:100.0%"></p>
+</div></div>
+<p>Images from <span class="citation" data-cites="blondelElementsDifferentiableProgramming2024">Blondel and Roulet (<a href="#/references" role="doc-biblioref" onclick="">2024</a>)</span></p>
 </section></section>
 <section>
 <section id="using-ad" class="title-slide slide level1 center">
@@ -700,17 +684,16 @@ w^T \cdot J_f\big|_x
 <li>Conflicting paradigms:
 <ul>
 <li>numeric vs.&nbsp;symbolic vs.&nbsp;algorithmic</li>
-<li>source-to-source vs.&nbsp;operator overloading</li>
-<li>Julia AST vs.&nbsp;Julia IR vs.&nbsp;LLVM level</li>
+<li>operator overloading vs.&nbsp;source-to-source (which source?)</li>
 </ul></li>
 <li>Cover varying subsets of the language</li>
 <li>Historical reasons: developed by different people</li>
 </ul>
 </section>
-<section id="useful-criteria" class="slide level2">
-<h2>Useful criteria</h2>
+<section id="meaningful-criteria" class="slide level2">
+<h2>Meaningful criteria</h2>
 <ul>
-<li>Does this backend execute without error?</li>
+<li>Does this AD backend execute without error?</li>
 <li>Does it return the right derivative?</li>
 <li>Does it run fast enough for me?</li>
 </ul>
@@ -718,89 +701,17 @@ w^T \cdot J_f\big|_x
 <section id="a-simple-decision-tree" class="slide level2">
 <h2>A simple decision tree</h2>
 <ol type="1">
-<li>Follow recommendations of high-level library (e.g.&nbsp;Flux.jl)</li>
-<li>Otherwise, choose between forward and reverse mode based on input and output dimensions</li>
-<li>Try out the most battle-tested backends:</li>
+<li>Follow recommendations of high-level library (e.g.&nbsp;Flux)</li>
+<li>Choose mode based on input and output dimensions</li>
+<li>Try the most battle-tested backends:</li>
 </ol>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p>Forward mode</p>
 <ul>
-<li>ForwardDiff</li>
-<li>Enzyme</li>
+<li>in forward mode: <a href="https://github.com/JuliaDiff/ForwardDiff.jl">ForwardDiff</a> or <a href="https://github.com/EnzymeAD/Enzyme.jl">Enzyme</a></li>
+<li>in reverse mode: <a href="https://github.com/FluxML/Zygote.jl">Zygote</a> or <a href="https://github.com/EnzymeAD/Enzyme.jl">Enzyme</a></li>
 </ul>
-</div><div class="column" style="width:50%;">
-<p>Reverse mode</p>
-<ul>
-<li>Zygote</li>
-<li>Enzyme</li>
-</ul>
-</div><ol start="4" type="1">
+<ol start="4" type="1">
 <li>If nothing works, fall back on finite differences</li>
 </ol>
-</div>
-</section></section>
-<section>
-<section id="differentiationinterface.jl" class="title-slide slide level1 center">
-<h1>DifferentiationInterface.jl</h1>
-
-</section>
-<section id="supported-backends" class="slide level2">
-<h2>Supported backends</h2>
-<!-- Using columns to fit everything on one slide -->
-<div class="columns">
-<div class="column" style="width:50%;">
-<ul>
-<li><a href="https://github.com/JuliaDiff/ChainRulesCore.jl">ChainRulesCore.jl</a></li>
-<li><a href="https://github.com/JuliaDiff/Diffractor.jl">Diffractor.jl</a></li>
-<li><a href="https://github.com/EnzymeAD/Enzyme.jl">Enzyme.jl</a></li>
-<li><a href="https://github.com/brianguenter/FastDifferentiation.jl">FastDifferentiation.jl</a></li>
-<li><a href="https://github.com/JuliaDiff/FiniteDiff.jl">FiniteDiff.jl</a></li>
-<li><a href="https://github.com/JuliaDiff/FiniteDifferences.jl">FiniteDifferences.jl</a></li>
-<li><a href="https://github.com/JuliaDiff/ForwardDiff.jl">ForwardDiff.jl</a></li>
-</ul>
-</div><div class="column" style="width:50%;">
-<ul>
-<li><a href="https://github.com/JuliaDiff/PolyesterForwardDiff.jl">PolyesterForwardDiff.jl</a></li>
-<li><a href="https://github.com/JuliaDiff/ReverseDiff.jl">ReverseDiff.jl</a></li>
-<li><a href="https://github.com/JuliaSymbolics/Symbolics.jl">Symbolics.jl</a></li>
-<li><a href="https://github.com/withbayes/Tapir.jl">Tapir.jl</a></li>
-<li><a href="https://github.com/FluxML/Tracker.jl">Tracker.jl</a></li>
-<li><a href="https://github.com/FluxML/Zygote.jl">Zygote.jl</a></li>
-</ul>
-</div></div>
-<p>Using <a href="https://github.com/SciML/ADTypes.jl">ADTypes.jl</a> to select backends.</p>
-</section>
-<section id="getting-started-with-di" class="slide level2">
-<h2>Getting started with DI</h2>
-<p><strong>Step 1:</strong> <code>import</code> desired backends</p>
-<div id="6" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DifferentiationInterface</span></span>
-<span id="cb1-2"><a aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">ForwardDiff</span>, <span class="bu">Enzyme</span>, <span class="bu">Zygote</span></span>
-<span id="cb1-3"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(x) <span class="op">=</span> <span class="fu">sum</span>(abs2, x)</span>
-<span id="cb1-5"><a aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> [<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">3.0</span>, <span class="fl">4.0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><strong>Step 2:</strong> Call <a href="https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/operators/">DI’s operators</a> using <a href="https://github.com/SciML/ADTypes.jl">ADTypes</a></p>
-<div id="8" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">value_and_gradient</span>(f, <span class="fu">AutoForwardDiff</span>(), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>(30.0, [2.0, 4.0, 6.0, 8.0])</code></pre>
-</div>
-</div>
-<div id="10" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">value_and_gradient</span>(f, <span class="fu">AutoEnzyme</span>(), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>(30.0, [2.0, 4.0, 6.0, 8.0])</code></pre>
-</div>
-</div>
-<div id="12" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">value_and_gradient</span>(f, <span class="fu">AutoZygote</span>(), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>(30.0, [2.0, 4.0, 6.0, 8.0])</code></pre>
-</div>
-</div>
-<p><strong>Step 3:</strong> Increase performance via <a href="https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial1/">DI’s preparation mechanism</a></p>
 </section></section>
 <section>
 <section id="enabling-ad" class="title-slide slide level1 center">
@@ -817,35 +728,177 @@ w^T \cdot J_f\big|_x
 </section>
 <section id="forwarddiff-type-genericity" class="slide level2">
 <h2>ForwardDiff: type-genericity</h2>
+<p>ForwardDiff propagates numbers of <a href="https://juliadiff.org/ForwardDiff.jl/stable/dev/how_it_works/">type <code>Dual</code></a>.</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>replace this</th>
+<th>with that</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>f(x::Vector{Float64})</code></td>
+<td><code>f(x::Vector{&lt;:Real})</code></td>
+</tr>
+<tr class="even">
+<td><code>zeros(n)</code></td>
+<td><code>zeros(eltype(x), n)</code></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="zygote-custom-rules" class="slide level2">
 <h2>Zygote: custom rules</h2>
+<p>If Zygote fails or is too slow, define a <a href="https://juliadiff.org/ChainRulesCore.jl/stable/">custom rule</a> with <a href="https://github.com/JuliaDiff/ChainRulesCore.jl">ChainRulesCore</a>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">ChainRulesCore</span></span>
+<span id="cb1-2"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> ChainRulesCore.<span class="fu">rrule</span>(<span class="op">::</span><span class="dt">typeof{myfunc}</span>, x)</span>
+<span id="cb1-4"><a aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="fu">myfunc</span>(x)</span>
+<span id="cb1-5"><a aria-hidden="true" tabindex="-1"></a>    <span class="kw">function</span> <span class="fu">myfunc_pullback</span>(dy)</span>
+<span id="cb1-6"><a aria-hidden="true" tabindex="-1"></a>        df <span class="op">=</span> <span class="fu">NoTangent</span>()</span>
+<span id="cb1-7"><a aria-hidden="true" tabindex="-1"></a>        dx <span class="op">=</span> J<span class="op">'</span>dy <span class="co"># Vector-Jacobian product</span></span>
+<span id="cb1-8"><a aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> (df, dx)</span>
+<span id="cb1-9"><a aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
+<span id="cb1-10"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y, myfunc_pullback</span>
+<span id="cb1-11"><a aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The rule returns the primal value and a function for the VJP.</p>
 </section>
-<section id="enzyme-type-stability" class="slide level2">
-<h2>Enzyme: type-stability</h2>
-</section>
-<section id="differentiationinterfacetest.jl" class="slide level2">
-<h2>DifferentiationInterfaceTest.jl</h2>
+<section id="enzyme-type-stability-and-activities" class="slide level2">
+<h2>Enzyme: type-stability and activities</h2>
+<p>Enzyme should be able to differentiate most code, but if not:</p>
+<ul>
+<li>Improve type stability</li>
+<li>Check that you provide temporary storage (with <code>Duplicated</code>) when necessary</li>
+<li>Read the <a href="https://enzymead.github.io/Enzyme.jl/stable/faq/">FAQ</a></li>
+</ul>
 </section></section>
 <section>
-<section id="developing-ad" class="title-slide slide level1 center">
-<h1>Developing AD</h1>
+<section id="differentiationinterface" class="title-slide slide level1 center">
+<h1>DifferentiationInterface</h1>
 
 </section>
-<section id="whats-the-point" class="slide level2">
-<h2>What’s the point?</h2>
+<section id="goals" class="slide level2">
+<h2>Goals</h2>
 <ul>
-<li>Why don’t we all use Enzyme?</li>
-<li>Because 3 years ago it was “why don’t we all use Diffractor / Zygote?”</li>
-<li>New solutions like Tapir or FastDifferentiation enable different tradeoffs</li>
+<li><a href="https://github.com/gdalle/DifferentiationInterface.jl">DifferentiationInterface</a> (DI) offers a common syntax for all AD backends<sup>1</sup></li>
+<li>AD users can compare correctness and performance without reading each documentation</li>
+<li>AD developers get access to a wider user base</li>
+</ul>
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The fine print</strong></p>
+</div>
+<div class="callout-content">
+<p>DI may be slower than a direct call to the backend’s API (mostly with Enzyme).</p>
+</div>
+</div>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>inspired by <a href="https://github.com/JuliaDiff/AbstractDifferentiation.jl">AbstractDifferentiation</a></p></li></ol></aside></section>
+<section id="supported-packages" class="slide level2">
+<h2>Supported packages</h2>
+<!-- Using columns to fit everything on one slide -->
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><a href="https://github.com/JuliaDiff/ChainRulesCore.jl">ChainRulesCore</a></li>
+<li><a href="https://github.com/JuliaDiff/Diffractor.jl">Diffractor</a></li>
+<li><a href="https://github.com/EnzymeAD/Enzyme.jl">Enzyme</a></li>
+<li><a href="https://github.com/brianguenter/FastDifferentiation.jl">FastDifferentiation</a></li>
+<li><a href="https://github.com/JuliaDiff/FiniteDiff.jl">FiniteDiff</a></li>
+<li><a href="https://github.com/JuliaDiff/FiniteDifferences.jl">FiniteDifferences</a></li>
+<li><a href="https://github.com/JuliaDiff/ForwardDiff.jl">ForwardDiff</a></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<ul>
+<li><a href="https://github.com/JuliaDiff/PolyesterForwardDiff.jl">PolyesterForwardDiff</a></li>
+<li><a href="https://github.com/JuliaDiff/ReverseDiff.jl">ReverseDiff</a></li>
+<li><a href="https://github.com/JuliaSymbolics/Symbolics.jl">Symbolics</a></li>
+<li><a href="https://github.com/withbayes/Tapir.jl">Tapir</a></li>
+<li><a href="https://github.com/FluxML/Tracker.jl">Tracker</a></li>
+<li><a href="https://github.com/FluxML/Zygote.jl">Zygote</a></li>
+</ul>
+</div></div>
+</section>
+<section id="getting-started-with-di" class="slide level2">
+<h2>Getting started with DI</h2>
+<p><strong>Step 1:</strong> load the necessary packages</p>
+<div id="2" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DifferentiationInterface</span></span>
+<span id="cb2-2"><a aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">ForwardDiff</span>, <span class="bu">Enzyme</span>, <span class="bu">Zygote</span></span>
+<span id="cb2-3"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(x) <span class="op">=</span> <span class="fu">sum</span>(abs2, x)</span>
+<span id="cb2-5"><a aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> [<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">3.0</span>, <span class="fl">4.0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Step 2:</strong> Combine <a href="https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/operators/">DI’s operators</a> with a backend from <a href="https://github.com/SciML/ADTypes.jl">ADTypes</a></p>
+<div id="4" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">value_and_gradient</span>(f, <span class="fu">AutoForwardDiff</span>(), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>(30.0, [2.0, 4.0, 6.0, 8.0])</code></pre>
+</div>
+</div>
+<div id="6" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">value_and_gradient</span>(f, <span class="fu">AutoEnzyme</span>(), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>(30.0, [2.0, 4.0, 6.0, 8.0])</code></pre>
+</div>
+</div>
+<div id="8" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">value_and_gradient</span>(f, <span class="fu">AutoZygote</span>(), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>(30.0, [2.0, 4.0, 6.0, 8.0])</code></pre>
+</div>
+</div>
+<p><strong>Step 3:</strong> Increase performance via <a href="https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial1/">DI’s preparation mechanism</a></p>
+</section>
+<section id="differentiationinterfacetest" class="slide level2">
+<h2>DifferentiationInterfaceTest</h2>
+<ul>
+<li>Systematic tests for a variety of inputs and functions</li>
+<li>Scenarios with weird arrays (static, GPU, sparse)</li>
+<li>Type-stability checks</li>
+<li>Automated benchmarks</li>
 </ul>
 </section>
-<section id="differentiationinterface.jl-differentiationinterfacetest.jl" class="slide level2">
-<h2>DifferentiationInterface.jl &amp; DifferentiationInterfaceTest.jl</h2>
+<section id="sparse-ad-ecosystem" class="slide level2">
+<h2>Sparse AD ecosystem</h2>
 <ul>
-<li>Sometimes, a little performance loss is acceptable for a simpler API</li>
-<li>Systematic test suites catch many errors</li>
+<li><a href="https://github.com/adrhill/SparseConnectivityTracer.jl">SparseConnectivityTracer</a> for sparsity pattern detection</li>
+<li><a href="https://github.com/gdalle/SparseMatrixColorings.jl">SparseMatrixColorings</a> for matrix coloring</li>
+<li>DI for sparse Jacobians and Hessians (see <a href="https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial2/">tutorial</a>)</li>
 </ul>
+
+<img data-src="img/coloring.png" class="r-stretch quarto-figure-center"><p class="caption">Sparse autodiff with coloring <span class="citation" data-cites="gebremedhinWhatColorYour2005">(<a href="#/references" role="doc-biblioref" onclick="">Gebremedhin, Manne, and Pothen 2005</a>)</span></p></section>
+<section id="whats-next" class="slide level2">
+<h2>What’s next?</h2>
+<p>DI and its sparse AD ecosystem are brand new projects:</p>
+<ul>
+<li>Try them out in your code</li>
+<li>Report bugs or inefficiencies</li>
+<li>Help us improve these packages!</li>
+</ul>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Coming up in DI</strong></p>
+</div>
+<div class="callout-content">
+<p>Multiple argument and non-array support.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="take-home-message" class="slide level2">
+<h2>Take-home message</h2>
+<p>Computing derivatives in Julia is easy, but each AD backend comes with its own limitations.</p>
+<p>Learn to recognize and overcome them, either as a user or as a developer.</p>
 </section></section>
 <section>
 <section id="appendix" class="title-slide slide level1 center">
@@ -858,6 +911,9 @@ w^T \cdot J_f\big|_x
 <div id="ref-blondelElementsDifferentiableProgramming2024" class="csl-entry" role="listitem">
 Blondel, Mathieu, and Vincent Roulet. 2024. <span>“The <span>Elements</span> of <span>Differentiable Programming</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2403.14606">https://doi.org/10.48550/arXiv.2403.14606</a>.
 </div>
+<div id="ref-gebremedhinWhatColorYour2005" class="csl-entry" role="listitem">
+Gebremedhin, Assefaw Hadish, Fredrik Manne, and Alex Pothen. 2005. <span>“What <span>Color Is Your Jacobian</span>? <span>Graph Coloring</span> for <span>Computing Derivatives</span>.”</span> <em>SIAM Review</em> 47 (4): 629–705. <a href="https://doi.org/cmwds4">https://doi.org/cmwds4</a>.
+</div>
 </div>
 
 <div class="quarto-auto-generated-content">
@@ -866,6 +922,7 @@ Blondel, Mathieu, and Vincent Roulet. 2024. <span>“The <span>Elements</span> o
 </div>
 </div>
 </section></section>
+
     </div>
   </div>
 
