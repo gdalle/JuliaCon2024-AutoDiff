@@ -158,7 +158,7 @@ one per input dimension.
 ::: {.callout-note}
 ## Special case
 
-The gradient of $f : \mathbb{R}^n \rightarrow \mathbb{R}$ requires just one JVP.
+The gradient of $f : \mathbb{R}^n \rightarrow \mathbb{R}$ requires just one VJP.
 :::
 
 ## Implementation details
