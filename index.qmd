@@ -28,6 +28,7 @@ format:
 execute:
     echo: true
     freeze: auto
+    error: true
 ---
 
 ## Follow along
@@ -62,7 +63,7 @@ Not much: with Automatic Differentiation (AD), derivatives are very easy to comp
 
 ## Differentiable programming
 
-> Differentiable programming is a programming paradigm in which **complex computer programs** (including those with control flows and data structures) can be **differentiated end-to-end automatically**, enabling gradient-based optimization of parameters in the program. In differentiable programming, a program is also defined as the composition of elementary operations, forming a **computation graph**.
+> Differentiable programming is a programming paradigm in which **complex computer programs** (including those with control flows and data structures) can be **differentiated end-to-end automatically**, enabling gradient-based optimization of parameters in the program.
 
 From the book by @blondelElementsDifferentiableProgramming2024
 
@@ -100,7 +101,7 @@ Imagine we need to use two packages: one for Foo, one for Bar
 - How to choose an AD backend and make it work?
 :::
 
-# How AD works
+# Understanding AD
 
 ## Various flavors of differentiation
 
@@ -117,17 +118,16 @@ Imagine we need to use two packages: one for Foo, one for Bar
 - Algorithmic aka autodiff
 :::
 
-
 ## Algorithmic differentiation 
 
 Three key ideas:
 
-1. Program = composition chain (or DAG) of many functions
-2. Jacobian of $f = f_L \circ \dots \circ f_2 \circ f_1$ given by the chain rule:
+1. Programs are **composition** chains (or DAGs) of many functions
+2. Jacobian of $f = f_L \circ \dots \circ f_2 \circ f_1$ given by the **chain rule**:
 $$
 J = J_L J_{L-1} \dots J_2 J_1
 $$
-1. Avoid materializing full Jacobians with matrix-vector products
+1. Avoid materializing full Jacobians with **matrix-vector products**
 
 ## Forward mode
 
@@ -173,8 +173,6 @@ Forward sweep only.
 Based on dual numbers.
 
 Low memory cost.
-
-![](img/forward.png){width="100%"}
 :::
 
 ::: {.column width="55%"}
@@ -186,90 +184,117 @@ Forward sweep + reverse sweep.
 Based on tapes.
 
 High memory cost.
-
-![](img/reverse.png){width="100%"}
 :::
 
 ::::
-
-Images from @blondelElementsDifferentiableProgramming2024
 
 # Using AD
 
 ## Why so many backends?
 
-- Conflicting paradigms:
+- Conflicting **paradigms**:
   - numeric vs. symbolic vs. algorithmic
   - operator overloading vs.  source-to-source (which source?)
-- Cover varying subsets of the language
-- Historical reasons: developed by different people
+- Cover varying **subsets of the language**
+- Historical reasons: developed by **different people**
 
 ## Meaningful criteria
 
-- Does this AD backend execute without error?
-- Does it return the right derivative?
-- Does it run fast enough for me?
+- Does this AD backend execute **without error**?
+- Does it return the **right derivative**?
+- Does it run **fast enough** for me?
 
 ## A simple decision tree
 
-1. Follow recommendations of high-level library (e.g. Flux)
-2. Choose mode based on input and output dimensions
-3. Try the most battle-tested backends:
-  - in forward mode: [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) or [Enzyme](https://github.com/EnzymeAD/Enzyme.jl)
-  - in reverse mode: [Zygote](https://github.com/FluxML/Zygote.jl) or [Enzyme](https://github.com/EnzymeAD/Enzyme.jl)
-4. If nothing works, fall back on finite differences
+1. **Follow recommendations** of high-level library (e.g. Flux).
+2. Otherwise, **choose mode** based on input and output dimensions.
+3. Try the most **battle-tested** backends: [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) or [Enzyme](https://github.com/EnzymeAD/Enzyme.jl) in forward mode, [Zygote](https://github.com/FluxML/Zygote.jl) or [Enzyme](https://github.com/EnzymeAD/Enzyme.jl) in reverse mode.
+4. If nothing works, fall back on finite differences.
 
 # Enabling AD
 
-## Typical failures
+## Typical AD failures (1)
 
-- `Float64` conversion in ForwardDiff
-- Mutation in Zygote
-- Ugly LLVM vomit in Enzyme
+```{julia}
+import ForwardDiff
 
-## ForwardDiff: type-genericity
-
-ForwardDiff propagates numbers of [type `Dual`](https://juliadiff.org/ForwardDiff.jl/stable/dev/how_it_works/).
-
-| replace this | with that |
-|---|---|
-| `f(x::Vector{Float64})` | `f(x::Vector{<:Real})` |
-| `zeros(n)` | `zeros(eltype(x), n)` |
-
-## Zygote: custom rules
-
-If Zygote fails or is too slow, define a [custom rule](https://juliadiff.org/ChainRulesCore.jl/stable/) with [ChainRulesCore](https://github.com/JuliaDiff/ChainRulesCore.jl):
-
-```julia
-using ChainRulesCore
-
-function ChainRulesCore.rrule(::typeof{myfunc}, x)
-    y = myfunc(x)
-    function myfunc_pullback(dy)
-        df = NoTangent()
-        dx = J'dy # Vector-Jacobian product
-        return (df, dx)
-    end
-    return y, myfunc_pullback
-end
+badcopy(x) = copyto!(zeros(size(x)), x)
+ForwardDiff.jacobian(badcopy, ones(2))
 ```
 
-The rule returns the primal value and a function for the VJP.
+## Typical AD failures (2)
 
-## Enzyme: type-stability and activities
+```{julia}
+import Zygote
 
-Enzyme should be able to differentiate most code, but if not:
+Zygote.jacobian(badcopy, ones(2))[1]
+```
 
-- Improve type stability
-- Check that you provide temporary storage (with `Duplicated`) when necessary
-- Read the [FAQ](https://enzymead.github.io/Enzyme.jl/stable/faq/)
+## Typical AD failures (3)
+
+```{julia}
+import Enzyme
+
+Enzyme.autodiff(
+  Enzyme.Forward,
+  copyto!,
+  Enzyme.Const(zeros(2)),
+  Enzyme.Duplicated(ones(2), zeros(2))
+)
+```
+
+## ForwardDiff troubleshooting
+
+Allow numbers of [type `Dual`](https://juliadiff.org/ForwardDiff.jl/stable/dev/how_it_works/) in your functions.
+
+```{julia}
+goodcopy(x::AbstractArray{<:Real}) = copyto!(zeros(eltype(x), size(x)), x)
+ForwardDiff.jacobian(goodcopy, ones(2))
+```
+
+## Zygote troubleshooting
+
+Define a [custom rule](https://juliadiff.org/ChainRulesCore.jl/stable/) with [ChainRulesCore](https://github.com/JuliaDiff/ChainRulesCore.jl):
+
+```{julia}
+using ChainRulesCore, LinearAlgebra
+
+badcopy2(x) = badcopy(x)
+
+function ChainRulesCore.rrule(::typeof(badcopy2), x)
+    @info "My rule is called"
+    y = badcopy2(x)  # primal value
+    function badcopy2_pullback(dy)
+    @info "My pullback is called"
+        df = NoTangent()
+        dx = I' * dy # Vector-Jacobian product
+        return (df, dx)
+    end
+    return y, badcopy2_pullback
+end
+
+Zygote.jacobian(badcopy2, ones(2))
+```
+
+## Enzyme troubleshooting
+
+Pay attention to type stability, temporary storage and activity annotations (see the [FAQ](https://enzymead.github.io/Enzyme.jl/stable/faq/)).
+
+```julia
+Enzyme.autodiff(
+  Enzyme.Forward,
+  copyto!,
+  Enzyme.Duplicated(zeros(2), zeros(2)),
+  Enzyme.Duplicated(ones(2), zeros(2))
+)
+```
 
 # DifferentiationInterface
 
 ## Goals
 
-- [DifferentiationInterface](https://github.com/gdalle/DifferentiationInterface.jl) (DI) offers a common syntax for all AD backends^[inspired by [AbstractDifferentiation](https://github.com/JuliaDiff/AbstractDifferentiation.jl)]
-- AD users can compare correctness and performance without reading each documentation
+- [DifferentiationInterface](https://github.com/gdalle/DifferentiationInterface.jl) (DI) offers a **common syntax** for all AD backends^[inspired by [AbstractDifferentiation](https://github.com/JuliaDiff/AbstractDifferentiation.jl)]
+- AD users can compare correctness and performance **without reading each documentation**
 - AD developers get access to a wider user base
 
 ::: {.callout-warning}
@@ -332,10 +357,10 @@ value_and_gradient(f, AutoZygote(), x)
 
 ## DifferentiationInterfaceTest
 
-- Systematic tests for a variety of inputs and functions
-- Scenarios with weird arrays (static, GPU, sparse)
+- **Systematic tests** for a variety of inputs and functions
+- Scenarios with **weird arrays** (static, GPU, sparse)
 - Type-stability checks
-- Automated benchmarks
+- Automated **benchmarks**
 
 ## Sparse AD ecosystem
 
@@ -344,6 +369,9 @@ value_and_gradient(f, AutoZygote(), x)
 - DI for sparse Jacobians and Hessians (see [tutorial](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial2/))
 
 ![Sparse AD with coloring [@gebremedhinWhatColorYour2005]](img/coloring.png)
+
+
+# Conclusion
 
 ## What's next?
 
@@ -356,16 +384,21 @@ DI and its sparse AD ecosystem are brand new projects:
 ::: {.callout-note}
 ## Coming up in DI
 
-Multiple argument and non-array support.
+Support for multiple arguments and non-array types.
 :::
+
+## More complex settings
+
+- [x] AD through a simple function
+- [ ] AD through an integral?
+- [ ] AD through an optimization solver?
+- [ ] AD through a stochastic expectation?
 
 ## Take-home message
 
-Computing derivatives in Julia is easy, but each AD backend comes with its own limitations.
+**Computing derivatives is easy**, but each AD solution comes with its own **limitations**.
 
 Learn to recognize and overcome them, either as a user or as a developer.
-
-# Appendix
 
 ## References
 

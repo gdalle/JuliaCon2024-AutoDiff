@@ -1,6 +1,8 @@
 [deps]
+ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 DifferentiationInterface = "a0c0ee7d-e4b9-4e03-894e-1c5f64a51d63"
 Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 QuartoNotebookRunner = "4c0109c6-14e9-4c88-93f0-2b974d3468f4"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
