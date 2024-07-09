@@ -92,7 +92,7 @@ Imagine we need to use two packages: one for Foo, one for Bar
 
 ## Python vs. Julia: developers
 
-![](img/python_julia_dev.png)
+![](img/python_julia_dev_1.png)
 
 ::: {.notes}
 - In Python, things are simple and boring: JAX, PyTorch or TensorFlow
@@ -100,6 +100,10 @@ Imagine we need to use two packages: one for Foo, one for Bar
 - A lot of folklore and hidden knowledge, hard to see straight
 - How to choose an AD backend and make it work?
 :::
+
+## Python vs. Julia: developers
+
+![](img/python_julia_dev_2.png)
 
 # Understanding AD
 
@@ -109,7 +113,6 @@ Imagine we need to use two packages: one for Foo, one for Bar
 - **Numeric**: $f'(x) \approx \frac{f(x+\varepsilon) - f(x)}{\varepsilon}$
 - **Symbolic**: code a formula for $f$, get a formula for $f'$
 - **Algorithmic**: code a program for $f$, get a value for $f'(x)$
-
 
 ::: {.notes}
 - Manual aka blood, sweat and tears
