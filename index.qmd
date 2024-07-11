@@ -3,9 +3,7 @@ title: "Gradients for everyone"
 title-slide-attributes:
   data-background-image: /img/qr/qrbackground.png
   data-background-size: contain
-subtitle: |
-    A quick guide to autodiff in Julia
-    [gdalle.github.io/JuliaCon2024-AutoDiff/](https://gdalle.github.io/JuliaCon2024-AutoDiff/)
+subtitle: "A quick guide to autodiff in Julia"
 author:
   - name: Guillaume Dalle
     orcid: 0000-0003-4866-1687
@@ -30,6 +28,7 @@ format:
     slide-number: true
     overview: true
     code-line-numbers: false
+    scrollable: true
 execute:
     echo: true
     freeze: auto
@@ -105,8 +104,6 @@ Imagine we need to use two packages: one for Foo, one for Bar
 - **Symbolic**: code a formula for $f$, get a formula for $f'$
 - **Algorithmic**: code a program for $f$, get a value for $f'(x)$
 
-More details in the book by @blondelElementsDifferentiableProgramming2024.
-
 ::: {.notes}
 - Manual aka blood, sweat and tears
 - Numeric aka finite differences
@@ -116,7 +113,7 @@ More details in the book by @blondelElementsDifferentiableProgramming2024.
 
 ## Algorithmic differentiation 
 
-Three key ideas:
+Three key ideas [@griewankEvaluatingDerivativesPrinciples2008]:
 
 1. Programs are **composition** chains (or DAGs) of many functions
 2. Jacobian of $f = f_L \circ \dots \circ f_2 \circ f_1$ given by the **chain rule**:
@@ -261,16 +258,15 @@ end
 Zygote.jacobian(badcopy2, ones(2))
 ```
 
-## Typical Enzyme failure
+## Typical Enzyme failure 
 
 ```{julia}
 import Enzyme
 
 Enzyme.autodiff(
   Enzyme.Forward,
-  copyto!,
-  Enzyme.Const(zeros(2)),
-  Enzyme.Duplicated(ones(2), zeros(2))
+  badcopy,
+  Enzyme.Active(ones(2))
 )
 ```
 
@@ -281,8 +277,7 @@ Pay attention to type stability, temporary storage and activity annotations (see
 ```julia
 Enzyme.autodiff(
   Enzyme.Forward,
-  copyto!,
-  Enzyme.Duplicated(zeros(2), zeros(2)),
+  badcopy,
   Enzyme.Duplicated(ones(2), zeros(2))
 )
 ```
@@ -387,7 +382,7 @@ DI and its sparse AD ecosystem are brand new projects:
 - Help us improve these packages!
 
 ::: {.callout-note}
-## Coming up in DI
+## Coming soon in DI (JuliaCon hackathon?)
 
 Support for multiple arguments and non-array types.
 :::
@@ -398,6 +393,8 @@ Support for multiple arguments and non-array types.
 - [ ] AD through an integral?
 - [ ] AD through an optimization solver?
 - [ ] AD through a stochastic expectation?
+
+More details in the book by @blondelElementsDifferentiableProgramming2024.
 
 ## Take-home message
 
