@@ -52,20 +52,14 @@ A linear approximation of a function around a point.
 ::: {.callout-important}
 ## Why do we care?
 
-Derivatives are essential in optimization and machine learning.
+Derivatives of computer code are essential in optimization and machine learning.
 :::
 
 ::: {.callout-tip}
 ## What do I need to do?
 
-Not much: with Automatic Differentiation (AD), derivatives are very easy to compute!
+Not much: with Automatic Differentiation (AD), derivatives are easy to compute!
 :::
-
-## Differentiable programming
-
-> Differentiable programming is a programming paradigm in which **complex computer programs** (including those with control flows and data structures) can be **differentiated end-to-end automatically**, enabling gradient-based optimization of parameters in the program.
-
-From the book by @blondelElementsDifferentiableProgramming2024
 
 ## Three types of AD users
 
@@ -114,6 +108,8 @@ Imagine we need to use two packages: one for Foo, one for Bar
 - **Symbolic**: code a formula for $f$, get a formula for $f'$
 - **Algorithmic**: code a program for $f$, get a value for $f'(x)$
 
+More details in the book by @blondelElementsDifferentiableProgramming2024.
+
 ::: {.notes}
 - Manual aka blood, sweat and tears
 - Numeric aka finite differences
@@ -130,11 +126,11 @@ Three key ideas:
 $$
 J = J_L J_{L-1} \dots J_2 J_1
 $$
-1. Avoid materializing full Jacobians with **matrix-vector products**
+3. Avoid materializing full Jacobians with **matrix-vector products**: we only need $Jv$ and $v^\top J$
 
 ## Forward mode
 
-Natural decomposition of **Jacobian-Vector Products** (JVPs), aka pushforwards or forward rules:
+**Jacobian-Vector Products** (JVPs), aka pushforwards, are naturally decomposed from $1$ to $L$:
 $$
 J v = J_L (J_{L-1}(\dots J_2(J_1 v)))
 $$
@@ -150,7 +146,7 @@ The derivative of $f : \mathbb{R} \rightarrow \mathbb{R}^m$ requires just one JV
 
 ## Reverse mode
 
-Natural decomposition of **Vector-Jacobian Products** (JVPs), aka pullbacks or reverse rules:
+**Vector-Jacobian Products** (JVPs), aka pullbacks, are naturally decomposed from $L$ to $1$:
 $$
 v^\top J = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
 $$
@@ -168,23 +164,23 @@ The gradient of $f : \mathbb{R}^n \rightarrow \mathbb{R}$ requires just one VJP.
 
 :::: {.columns}
 
-::: {.column width="45%"}
+::: {.column width="40%"}
 ### Forward mode
 
 Forward sweep only.
 
-Based on dual numbers.
+Often based on dual numbers.
 
 Low memory cost.
 :::
 
-::: {.column width="55%"}
+::: {.column width="50%"}
 
 ### Reverse mode
 
 Forward sweep + reverse sweep.
 
-Based on tapes.
+Often based on tapes.
 
 High memory cost.
 :::
@@ -216,34 +212,14 @@ High memory cost.
 
 # Enabling AD
 
-## Typical AD failures (1)
+## Typical ForwardDiff failure
 
 ```{julia}
 import ForwardDiff
 
 badcopy(x) = copyto!(zeros(size(x)), x)
+
 ForwardDiff.jacobian(badcopy, ones(2))
-```
-
-## Typical AD failures (2)
-
-```{julia}
-import Zygote
-
-Zygote.jacobian(badcopy, ones(2))[1]
-```
-
-## Typical AD failures (3)
-
-```{julia}
-import Enzyme
-
-Enzyme.autodiff(
-  Enzyme.Forward,
-  copyto!,
-  Enzyme.Const(zeros(2)),
-  Enzyme.Duplicated(ones(2), zeros(2))
-)
 ```
 
 ## ForwardDiff troubleshooting
@@ -252,7 +228,16 @@ Allow numbers of [type `Dual`](https://juliadiff.org/ForwardDiff.jl/stable/dev/h
 
 ```{julia}
 goodcopy(x::AbstractArray{<:Real}) = copyto!(zeros(eltype(x), size(x)), x)
+
 ForwardDiff.jacobian(goodcopy, ones(2))
+```
+
+## Typical Zygote failure
+
+```{julia}
+import Zygote
+
+Zygote.jacobian(badcopy, ones(2))
 ```
 
 ## Zygote troubleshooting
@@ -277,6 +262,19 @@ function ChainRulesCore.rrule(::typeof(badcopy2), x)
 end
 
 Zygote.jacobian(badcopy2, ones(2))
+```
+
+## Typical Enzyme failure
+
+```{julia}
+import Enzyme
+
+Enzyme.autodiff(
+  Enzyme.Forward,
+  copyto!,
+  Enzyme.Const(zeros(2)),
+  Enzyme.Duplicated(ones(2), zeros(2))
+)
 ```
 
 ## Enzyme troubleshooting
@@ -358,6 +356,14 @@ value_and_gradient(f, AutoZygote(), x)
 
 **Step 3:** Increase performance via [DI's preparation mechanism](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial1/)
 
+## Features of DI
+
+- Support for functions `f(x)` or `f!(y, x)` with **scalar/array inputs & outputs**
+- Eight standard **operators**: `pushforward`, `pullback`, `derivative`, `gradient`, `jacobian`, `hvp`, `second_derivative`, `hessian`
+- Out-of-place and **in-place** versions
+- **Combine** different backends using [`SecondOrder`](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/api/#DifferentiationInterface.SecondOrder)
+- **Translate** between backends using [`DifferentiateWith`](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/api/#DifferentiationInterface.DifferentiateWith)
+
 ## DifferentiationInterfaceTest
 
 - **Systematic tests** for a variety of inputs and functions
@@ -372,7 +378,6 @@ value_and_gradient(f, AutoZygote(), x)
 - DI for sparse Jacobians and Hessians (see [tutorial](https://gdalle.github.io/DifferentiationInterface.jl/DifferentiationInterface/stable/tutorial2/))
 
 ![Sparse AD with coloring [@gebremedhinWhatColorYour2005]](img/coloring.png)
-
 
 # Conclusion
 
