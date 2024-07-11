@@ -130,9 +130,9 @@ Imagine we need to use two packages: one for Foo, one for Bar
   - finite differences are also automatic, compute JVPs
 :::
 
-## Algorithmic differentiation 
+## Automatic differentiation 
 
-Three key ideas [@griewankEvaluatingDerivativesPrinciples2008]:
+**Three key ideas** [@griewankEvaluatingDerivativesPrinciples2008]:
 
 1. Programs are **composition** chains (or DAGs) of many functions
 2. Jacobian of $f = f_L \circ \dots \circ f_2 \circ f_1$ given by the **chain rule**:
@@ -169,7 +169,7 @@ v^\top J = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
 $$
 
 For $f: \mathbb{R}^n \rightarrow \mathbb{R}^m$, the $m \times n$ Jacobian requires $m$ VJPs: 
-one per input dimension.
+one per output dimension.
 
 ::: {.callout-note}
 ## Special case
