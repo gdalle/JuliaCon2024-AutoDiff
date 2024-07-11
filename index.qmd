@@ -57,13 +57,17 @@ Derivatives of computer code are essential in optimization and machine learning.
 Not much: with Automatic Differentiation (AD), derivatives are easy to compute!
 :::
 
+::: {.notes}
+- We're more specifically talking about functions expressed as programs! 
+:::
+
 ## Three types of AD users
 
 1. **Package users** want to differentiate through functions
 2. **Package developers** want to write differentiable functions
 3. **Backend developers** want to create new AD systems
 
-## Python vs. Julia: users
+## Python vs. Julia: user experience
 
 ![](img/python_julia_user.png)
 
@@ -73,11 +77,14 @@ Imagine we need to use two packages: one for Foo, one for Bar
 - In Python, both packages need to be rewritten for each framework
   - (-) "three language problem"
   - (+) compatibility between packages in an ecosystem is almost guaranteed
+  - user doesn't need to understand AD at all
 - In Julia, only one Foo and Bar package need to exist
   - (+) efforts can be "centralized"
   - (-) compatibility with backends is up to the package developers
     - must be documented
     - hard to understand for newcomers
+  - puts burden on user to understand AD
+  - ideally, things would "just work"
 :::
 
 ## Python vs. Julia: developers
@@ -85,15 +92,26 @@ Imagine we need to use two packages: one for Foo, one for Bar
 ![](img/python_julia_dev_1.png)
 
 ::: {.notes}
+- Let's talk about the developer experience
 - In Python, things are simple and boring: JAX, PyTorch or TensorFlow
 - In Julia, things are complicated and fun: <https://juliadiff.org/>
-- A lot of folklore and hidden knowledge, hard to see straight
-- How to choose an AD backend and make it work?
 :::
 
 ## Python vs. Julia: developers
 
 ![](img/python_julia_dev_2.png)
+
+::: {.notes}
+- Python frameworks come with constraints
+  - e.g. JAX doesn't allow inplace mutation
+  - but you are aware of these before you start writing your code
+- Julia backends come with constraints
+  - unless you already had a specific backend in mind when working on your package, you will have to refactor
+  - ⚠️ contraints of some backends are "orthogonal" to performant Julia code
+    - e.g. no in-place mutation in Zygote
+  - A lot of folklore and hidden knowledge, hard to see straight
+  - How to choose an AD backend and make it work?
+:::
 
 # Understanding AD
 
@@ -102,13 +120,14 @@ Imagine we need to use two packages: one for Foo, one for Bar
 - **Manual**: work out $f'$ by hand
 - **Numeric**: $f'(x) \approx \frac{f(x+\varepsilon) - f(x)}{\varepsilon}$
 - **Symbolic**: code a formula for $f$, get a formula for $f'$
-- **Algorithmic**: code a program for $f$, get a value for $f'(x)$
+- **Automatic**: code a program for $f$, get a value for $f'(x)$
 
 ::: {.notes}
 - Manual aka blood, sweat and tears
 - Numeric aka finite differences
 - Symbolic aka computer algebra
-- Algorithmic aka autodiff
+- Automatic aka algorithmic
+  - finite differences are also automatic, compute JVPs
 :::
 
 ## Algorithmic differentiation 
