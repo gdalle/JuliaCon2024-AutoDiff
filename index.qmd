@@ -141,6 +141,10 @@ J = J_L J_{L-1} \dots J_2 J_1
 $$
 3. Avoid materializing full Jacobians with **matrix-vector products**: we only need $Jv$ and $v^\top J$
 
+::: {.notes}
+- Most notably for point 3, a matrix-vector-product with the i-th standard basis vector returns the i-th column of the matrix 
+:::
+
 ## Forward mode
 
 **Jacobian-Vector Products** (JVPs), aka pushforwards, are naturally decomposed from $1$ to $L$:
@@ -199,6 +203,12 @@ High memory cost.
 :::
 
 ::::
+
+::: {.notes}
+- Jacobians/JVPs/VJPs are computed around a "point of linearization"
+  - in forward-mode, the order of the JVP evaluation is the same as the the forward pass through f
+  - in reverse-mode, the order is reversed -> we need tape 
+:::
 
 # Using AD
 
