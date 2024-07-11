@@ -3,7 +3,9 @@ title: "Gradients for everyone"
 title-slide-attributes:
   data-background-image: /img/qr/qrbackground.png
   data-background-size: contain
-subtitle: "A quick guide to autodiff in Julia\n[gdalle.github.io/JuliaCon2024-AutoDiff/](https://gdalle.github.io/JuliaCon2024-AutoDiff/)"
+subtitle: |
+    A quick guide to autodiff in Julia
+    [gdalle.github.io/JuliaCon2024-AutoDiff/](https://gdalle.github.io/JuliaCon2024-AutoDiff/)
 author:
   - name: Guillaume Dalle
     orcid: 0000-0003-4866-1687
