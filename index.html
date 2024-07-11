@@ -667,6 +667,21 @@ J = J_L J_{L-1} \dots J_2 J_1
 \]</span></li>
 <li>Avoid materializing full Jacobians with <strong>matrix-vector products</strong>: we only need <span class="math inline">\(Jv\)</span> and <span class="math inline">\(v^\top J\)</span></li>
 </ol>
+<aside class="notes">
+<ul>
+<li>Most notably for point 3, a matrix-vector-product with the i-th standard basis vector returns the i-th column of the matrix</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="forward-mode" class="slide level2">
 <h2>Forward mode</h2>
@@ -722,6 +737,25 @@ v^\top J = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
 <p>Often based on tapes.</p>
 <p>High memory cost.</p>
 </div></div>
+<aside class="notes">
+<ul>
+<li>Jacobians/JVPs/VJPs are computed around a “point of linearization”
+<ul>
+<li>in forward-mode, the order of the JVP evaluation is the same as the the forward pass through f</li>
+<li>in reverse-mode, the order is reversed -&gt; we need tape</li>
+</ul></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section></section>
 <section>
 <section id="using-ad" class="title-slide slide level1 center">
@@ -779,7 +813,7 @@ Closest candidates are:
    @ Base rounding.jl:207
   (::Type{T})(::T) where T&lt;:Number
    @ Core boot.jl:792
-  Float64(!Matched::IrrationalConstants.Sqrt2π)
+  Float64(!Matched::IrrationalConstants.Twoinvπ)
    @ IrrationalConstants ~/.julia/packages/IrrationalConstants/vp5v4/src/macro.jl:112
   ...
 
@@ -799,7 +833,7 @@ Stacktrace:
   [7] copyto!
     @ ./array.jl:385 [inlined]
   [8] badcopy(x::Vector{ForwardDiff.Dual{ForwardDiff.Tag{typeof(badcopy), Float64}, Float64, 2}})
-    @ Main.Notebook ~/work/JuliaCon2024-AutoDiff/JuliaCon2024-AutoDiff/index.qmd:237
+    @ Main.Notebook ~/work/JuliaCon2024-AutoDiff/JuliaCon2024-AutoDiff/index.qmd:247
   [9] vector_mode_dual_eval!
     @ ~/.julia/packages/ForwardDiff/PcZ48/src/apiutils.jl:24 [inlined]
  [10] vector_mode_jacobian(f::typeof(badcopy), x::Vector{Float64}, cfg::ForwardDiff.JacobianConfig{ForwardDiff.Tag{typeof(badcopy), Float64}, Float64, 2, Vector{ForwardDiff.Dual{ForwardDiff.Tag{typeof(badcopy), Float64}, Float64, 2}}})
@@ -809,7 +843,7 @@ Stacktrace:
  [12] jacobian(f::Function, x::Vector{Float64}, cfg::ForwardDiff.JacobianConfig{ForwardDiff.Tag{typeof(badcopy), Float64}, Float64, 2, Vector{ForwardDiff.Dual{ForwardDiff.Tag{typeof(badcopy), Float64}, Float64, 2}}})
     @ ForwardDiff ~/.julia/packages/ForwardDiff/PcZ48/src/jacobian.jl:19
  [13] top-level scope
-    @ ~/work/JuliaCon2024-AutoDiff/JuliaCon2024-AutoDiff/index.qmd:239</code></pre>
+    @ ~/work/JuliaCon2024-AutoDiff/JuliaCon2024-AutoDiff/index.qmd:249</code></pre>
 </div>
 </div>
 </section>
@@ -854,7 +888,7 @@ Stacktrace:
   [4] (::Zygote.var"#2633#back#545"{Zygote.var"#543#544"{Vector{Float64}}})(Δ::Vector{Float64})
     @ Zygote ~/.julia/packages/ZygoteRules/M4xmc/src/adjoint.jl:72
   [5] badcopy
-    @ ~/work/JuliaCon2024-AutoDiff/JuliaCon2024-AutoDiff/index.qmd:237 [inlined]
+    @ ~/work/JuliaCon2024-AutoDiff/JuliaCon2024-AutoDiff/index.qmd:247 [inlined]
   [6] (::Zygote.Pullback{Tuple{typeof(badcopy), Vector{Float64}}, Tuple{Zygote.var"#2633#back#545"{Zygote.var"#543#544"{Vector{Float64}}}, Zygote.ZBack{Returns{Tuple{ChainRulesCore.NoTangent, ChainRulesCore.NoTangent}}}, Zygote.ZBack{Returns{Tuple{ChainRulesCore.NoTangent, ChainRulesCore.NoTangent}}}}})(Δ::Vector{Float64})
     @ Zygote ~/.julia/packages/Zygote/nsBv0/src/compiler/interface2.jl:0
   [7] (::Zygote.var"#291#292"{Tuple{Tuple{Nothing}}, Zygote.Pullback{Tuple{typeof(badcopy), Vector{Float64}}, Tuple{Zygote.var"#2633#back#545"{Zygote.var"#543#544"{Vector{Float64}}}, Zygote.ZBack{Returns{Tuple{ChainRulesCore.NoTangent, ChainRulesCore.NoTangent}}}, Zygote.ZBack{Returns{Tuple{ChainRulesCore.NoTangent, ChainRulesCore.NoTangent}}}}}})(Δ::Vector{Float64})
@@ -869,7 +903,7 @@ Stacktrace:
     @ ./operators.jl:1044 [inlined]
  [12] #_#103
     @ ./operators.jl:1041 [inlined]
- [13] (::Zygote.Pullback{Tuple{Base.var"##_#103", @Kwargs{}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}}, Tuple{Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:inner, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(badcopy)}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(Zygote._jvec)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(Zygote._jvec)}, Tuple{}}}}, Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:outer, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(Zygote._jvec)}}, Zygote.var"#2169#back#293"{Zygote.var"#291#292"{Tuple{Tuple{Nothing}, Tuple{Nothing}}, Zygote.var"#2013#back#204"{typeof(identity)}}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(badcopy)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(badcopy)}, Tuple{}}}}}}, Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(Zygote._jvec), typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Tuple{Zygote.Pullback{Tuple{typeof(Zygote._jvec), Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(vec), Vector{Float64}}, Tuple{}}}}, Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Any}, Zygote.var"#2029#back#213"{Zygote.var"#back#211"{2, 1, Zygote.Context{false}, typeof(Zygote._jvec)}}, Zygote.var"#2141#back#281"{Zygote.var"#277#280"}}}}})(Δ::Vector{Float64})
+ [13] (::Zygote.Pullback{Tuple{Base.var"##_#103", @Kwargs{}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(Zygote._jvec), typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Tuple{Zygote.var"#2141#back#281"{Zygote.var"#277#280"}, Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Any}, Zygote.var"#2029#back#213"{Zygote.var"#back#211"{2, 1, Zygote.Context{false}, typeof(Zygote._jvec)}}, Zygote.Pullback{Tuple{typeof(Zygote._jvec), Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(vec), Vector{Float64}}, Tuple{}}}}}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}}, Tuple{Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(badcopy)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(badcopy)}, Tuple{}}}}, Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:inner, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(badcopy)}}, Zygote.var"#2169#back#293"{Zygote.var"#291#292"{Tuple{Tuple{Nothing}, Tuple{Nothing}}, Zygote.var"#2013#back#204"{typeof(identity)}}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(Zygote._jvec)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(Zygote._jvec)}, Tuple{}}}}, Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:outer, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(Zygote._jvec)}}}}}})(Δ::Vector{Float64})
     @ Zygote ~/.julia/packages/Zygote/nsBv0/src/compiler/interface2.jl:0
  [14] #291
     @ ~/.julia/packages/Zygote/nsBv0/src/lib/lib.jl:206 [inlined]
@@ -877,16 +911,16 @@ Stacktrace:
     @ ~/.julia/packages/ZygoteRules/M4xmc/src/adjoint.jl:72 [inlined]
  [16] ComposedFunction
     @ ./operators.jl:1041 [inlined]
- [17] (::Zygote.Pullback{Tuple{ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{Type{NamedTuple}}, Tuple{}}, Zygote.var"#2169#back#293"{Zygote.var"#291#292"{Tuple{Tuple{Nothing, Nothing}, Tuple{Nothing}}, Zygote.Pullback{Tuple{Base.var"##_#103", @Kwargs{}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}}, Tuple{Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:inner, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(badcopy)}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(Zygote._jvec)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(Zygote._jvec)}, Tuple{}}}}, Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:outer, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(Zygote._jvec)}}, Zygote.var"#2169#back#293"{Zygote.var"#291#292"{Tuple{Tuple{Nothing}, Tuple{Nothing}}, Zygote.var"#2013#back#204"{typeof(identity)}}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(badcopy)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(badcopy)}, Tuple{}}}}}}, Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(Zygote._jvec), typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Tuple{Zygote.Pullback{Tuple{typeof(Zygote._jvec), Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(vec), Vector{Float64}}, Tuple{}}}}, Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Any}, Zygote.var"#2029#back#213"{Zygote.var"#back#211"{2, 1, Zygote.Context{false}, typeof(Zygote._jvec)}}, Zygote.var"#2141#back#281"{Zygote.var"#277#280"}}}}}}}, Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.var"#2366#back#419"{Zygote.var"#pairs_namedtuple_pullback#418"{(), @NamedTuple{}}}}})(Δ::Vector{Float64})
+ [17] (::Zygote.Pullback{Tuple{ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{Type{NamedTuple}}, Tuple{}}, Zygote.var"#2169#back#293"{Zygote.var"#291#292"{Tuple{Tuple{Nothing, Nothing}, Tuple{Nothing}}, Zygote.Pullback{Tuple{Base.var"##_#103", @Kwargs{}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(Zygote._jvec), typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Tuple{Zygote.var"#2141#back#281"{Zygote.var"#277#280"}, Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Any}, Zygote.var"#2029#back#213"{Zygote.var"#back#211"{2, 1, Zygote.Context{false}, typeof(Zygote._jvec)}}, Zygote.Pullback{Tuple{typeof(Zygote._jvec), Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(vec), Vector{Float64}}, Tuple{}}}}}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}}, Tuple{Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(badcopy)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(badcopy)}, Tuple{}}}}, Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:inner, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(badcopy)}}, Zygote.var"#2169#back#293"{Zygote.var"#291#292"{Tuple{Tuple{Nothing}, Tuple{Nothing}}, Zygote.var"#2013#back#204"{typeof(identity)}}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(Zygote._jvec)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(Zygote._jvec)}, Tuple{}}}}, Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:outer, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(Zygote._jvec)}}}}}}}}, Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.var"#2366#back#419"{Zygote.var"#pairs_namedtuple_pullback#418"{(), @NamedTuple{}}}}})(Δ::Vector{Float64})
     @ Zygote ~/.julia/packages/Zygote/nsBv0/src/compiler/interface2.jl:0
- [18] (::Zygote.var"#75#76"{Zygote.Pullback{Tuple{ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{Type{NamedTuple}}, Tuple{}}, Zygote.var"#2169#back#293"{Zygote.var"#291#292"{Tuple{Tuple{Nothing, Nothing}, Tuple{Nothing}}, Zygote.Pullback{Tuple{Base.var"##_#103", @Kwargs{}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}}, Tuple{Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:inner, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(badcopy)}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(Zygote._jvec)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(Zygote._jvec)}, Tuple{}}}}, Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:outer, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(Zygote._jvec)}}, Zygote.var"#2169#back#293"{Zygote.var"#291#292"{Tuple{Tuple{Nothing}, Tuple{Nothing}}, Zygote.var"#2013#back#204"{typeof(identity)}}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(badcopy)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(badcopy)}, Tuple{}}}}}}, Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(Zygote._jvec), typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Tuple{Zygote.Pullback{Tuple{typeof(Zygote._jvec), Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(vec), Vector{Float64}}, Tuple{}}}}, Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Any}, Zygote.var"#2029#back#213"{Zygote.var"#back#211"{2, 1, Zygote.Context{false}, typeof(Zygote._jvec)}}, Zygote.var"#2141#back#281"{Zygote.var"#277#280"}}}}}}}, Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.var"#2366#back#419"{Zygote.var"#pairs_namedtuple_pullback#418"{(), @NamedTuple{}}}}}})(Δ::Vector{Float64})
+ [18] (::Zygote.var"#75#76"{Zygote.Pullback{Tuple{ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{Type{NamedTuple}}, Tuple{}}, Zygote.var"#2169#back#293"{Zygote.var"#291#292"{Tuple{Tuple{Nothing, Nothing}, Tuple{Nothing}}, Zygote.Pullback{Tuple{Base.var"##_#103", @Kwargs{}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(Zygote._jvec), typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Tuple{Zygote.var"#2141#back#281"{Zygote.var"#277#280"}, Zygote.Pullback{Tuple{typeof(Base.call_composed), Tuple{typeof(badcopy)}, Tuple{Vector{Float64}}, @Kwargs{}}, Any}, Zygote.var"#2029#back#213"{Zygote.var"#back#211"{2, 1, Zygote.Context{false}, typeof(Zygote._jvec)}}, Zygote.Pullback{Tuple{typeof(Zygote._jvec), Vector{Float64}}, Tuple{Zygote.Pullback{Tuple{typeof(vec), Vector{Float64}}, Tuple{}}}}}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}}, Tuple{Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(badcopy)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(badcopy)}, Tuple{}}}}, Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:inner, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(badcopy)}}, Zygote.var"#2169#back#293"{Zygote.var"#291#292"{Tuple{Tuple{Nothing}, Tuple{Nothing}}, Zygote.var"#2013#back#204"{typeof(identity)}}}, Zygote.Pullback{Tuple{typeof(Base.unwrap_composed), typeof(Zygote._jvec)}, Tuple{Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.Pullback{Tuple{typeof(Base.maybeconstructor), typeof(Zygote._jvec)}, Tuple{}}}}, Zygote.var"#2180#back#303"{Zygote.var"#back#302"{:outer, Zygote.Context{false}, ComposedFunction{typeof(Zygote._jvec), typeof(badcopy)}, typeof(Zygote._jvec)}}}}}}}}, Zygote.var"#2013#back#204"{typeof(identity)}, Zygote.var"#2366#back#419"{Zygote.var"#pairs_namedtuple_pullback#418"{(), @NamedTuple{}}}}}})(Δ::Vector{Float64})
     @ Zygote ~/.julia/packages/Zygote/nsBv0/src/compiler/interface.jl:91
  [19] withjacobian(f::Function, args::Vector{Float64})
     @ Zygote ~/.julia/packages/Zygote/nsBv0/src/lib/grad.jl:150
  [20] jacobian(f::Function, args::Vector{Float64})
     @ Zygote ~/.julia/packages/Zygote/nsBv0/src/lib/grad.jl:128
  [21] top-level scope
-    @ ~/work/JuliaCon2024-AutoDiff/JuliaCon2024-AutoDiff/index.qmd:265</code></pre>
+    @ ~/work/JuliaCon2024-AutoDiff/JuliaCon2024-AutoDiff/index.qmd:275</code></pre>
 </div>
 </div>
 </section>
@@ -940,7 +974,7 @@ Stacktrace:
  [2] EnzymeCore.Active(x::Vector{Float64})
    @ EnzymeCore ~/.julia/packages/EnzymeCore/a2poZ/src/EnzymeCore.jl:49
  [3] top-level scope
-   @ ~/work/JuliaCon2024-AutoDiff/JuliaCon2024-AutoDiff/index.qmd:305</code></pre>
+   @ ~/work/JuliaCon2024-AutoDiff/JuliaCon2024-AutoDiff/index.qmd:315</code></pre>
 </div>
 </div>
 </section>
