@@ -168,7 +168,7 @@ The derivative of $f : \mathbb{R} \rightarrow \mathbb{R}^m$ requires just one JV
 
 ## Reverse mode
 
-**Vector-Jacobian Products** (JVPs), aka pullbacks, are naturally decomposed from $L$ to $1$:
+**Vector-Jacobian Products** (VJPs), aka pullbacks, are naturally decomposed from $L$ to $1$:
 $$
 v^\top J = (((v^\top J_L) J_{L-1}) \dots J_2)J_1
 $$
