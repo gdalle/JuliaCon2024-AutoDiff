@@ -1,6 +1,7 @@
 # JuliaCon 2024 - AutoDiff talk
 
 [![Slides badge](https://img.shields.io/badge/preview-slides-blue)](https://gdalle.github.io/JuliaCon2024-AutoDiff/)
+[![YouTube badge](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/live/ZKt0tiG5ajw?feature=shared&t=19747)
 
 Slides for the talk [*Gradients for everyone: a quick guide to autodiff in Julia*](https://pretalx.com/juliacon2024/talk/YGZYWK/) at [JuliaCon 2024](https://juliacon.org/2024/).
 
